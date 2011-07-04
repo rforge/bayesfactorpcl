@@ -1,7 +1,7 @@
 Package: BayesFactors.gibi
 Type: Package
 Title: Compute Bayes factors using the GIBI interface
-Version: 0.1
+Version: 0.1 
 Date: 2011-06-30
 Author: Richard D. Morey
 Maintainer: Richard D. Morey <richarddmorey@gmail.com>
