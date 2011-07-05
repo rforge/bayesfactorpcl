@@ -10,5 +10,14 @@
 	
 	.pluginEnv <<- new.env(parent=baseenv())
 	initialEnvironment(.pluginEnv)
+	.pluginProvides <- list(
+						oneWayAov <- list(
+								name="One-way ANOVA",
+								short="One-way analysis of variance",
+								long="One-way analysis of variance as described by Morey, Rouder, Pratte, and Speckman (in press)."
+						)
+	)
+	
+	c("ttest")
 
 }
