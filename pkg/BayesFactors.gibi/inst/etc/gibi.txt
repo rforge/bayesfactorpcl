@@ -1,0 +1,1 @@
+oneWayAov	"One-Way ANOVA"	"One-way Analysis of Variance"	"The default one-way ANOVA described by Morey, Rouder, Pratte, and Speckman (in press)"	
