@@ -1,4 +1,72 @@
-initialEnvironment.oneWay <- function(pluginEnv)
+initialEnvironment.oneWay <- function()
+{
+	
+  ifc <- new.env(parent=baseenv())
+
+  ifc$data <- new.env(parent=baseenv())
+
+  ifc$data$vars <- list(dv="dependent variable") 
+  ifc$data$cols <- list(categorical="categorical")
+
+  ifc$data$check <- check.temp
+
+  ifc$models <- new.env(parent=baseenv())
+
+  ifc$models$create.default <- BayesFactors.gibi:::create.model
+  ifc$models$create.description <- BayesFactors.gibi:::create.description
+
+  ifc$pluginVersion = .pluginVersion
+  ifc$gibiVersion = .gibiVersion
+  ifc$pluginName = .pluginName
+
+
+  return(ifc)
+}
+
+
+create.description <- function(model) 
+{
+  
+  if(!is.null(model$anls))
+	{
+  		list("IV" = model$mdl$level.one[["Location"]][[1]],
+  			 "Levels" = nlevels(as.factor(model$data$independent)),
+			 "BF" = model$out$rslt$inferentials[[1]],
+			 "post. mean mu" = model$out$rslt$posteriorMeans[,1],
+			 "post. sd delta" = model$out$rslt$posteriorSD[,1],
+			 #"MC error delta" = model$out$rslt$MCerror[,1]
+			 "scale" = model$mdl$priors$rscale
+			 )
+			 
+	}else{
+	  		list("IV" = model$mdl$level.one[["Location"]][[1]],
+  			 "Levels" = nlevels(as.factor(model$data$independent)),
+			 "BF" = "",
+			 "post. mean delta" = "",
+			 "post. sd delta" = "",
+			 #"MC error delta" = "
+			 "scale" = ""
+			 )
+
+	
+	}
+
+
+}
+
+create.model <- function() {
+
+  list(
+    level.one = list("Location"=list()),
+    prior     = list("Effect size"=list("scale"=1))
+  )
+}
+
+
+
+
+
+initialEnvironment.oneWay.old <- function(pluginEnv)
 {
 	pluginEnv$pluginVersion = .pluginVersion
 	pluginEnv$gibiVersion = .gibiVersion
@@ -36,7 +104,7 @@ initialEnvironment.oneWay <- function(pluginEnv)
 						mdl <- list(
 									# The effectsListFunc() function will take the columns of interest as an argument
 									# and return a list of possible effects.
-									effectsListFunc <- .pluginEffectsList
+									effectsListFunc <- .pluginEffectsList,
 									priors <- list(
 											scale <- list(
 														parameter="delta",
@@ -49,7 +117,7 @@ initialEnvironment.oneWay <- function(pluginEnv)
 														checkFunc <- .checkPositive,
 														checkFuncArgs=list()
 											)
-									)
+									),
 									# List of parameters 
 									delta <- list(
 											togglable=FALSE,
@@ -121,7 +189,7 @@ initialEnvironment.oneWay <- function(pluginEnv)
 											checkFuncArgs=list(),
 											sortPriority=2
 									)
-								)
+								),
 						diag <- list(
 
 								),

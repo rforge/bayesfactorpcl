@@ -3,13 +3,10 @@
 	# define version numbers
 	allPackages = installed.packages()
 
-	.pluginVersion <<- allPackages[which(allPackages[,1]==pkgname),3]
-	.gibiVersion <<- allPackages[which(allPackages[,1]=="gibi"),3]
-	.pluginName <<- pkgname	 
-	
-	
-	.pluginEnv <<- new.env(parent=baseenv())
-	initialEnvironment(.pluginEnv)
-	.pluginProvides <- 0#read in information from gibi.txt
+	assignInNamespace(".pluginVersion", allPackages[which(allPackages[,1]==pkgname),3], pkgname)
+#	assignInNamespace(".gibiVersion", allPackages[which(allPackages[,1]=="gibi"),3], pkgname)
+	assignInNamespace(".gibiVersion", 0.001, pkgname)
+	assignInNamespace(".pluginName", pkgname, pkgname)
 
+	
 }

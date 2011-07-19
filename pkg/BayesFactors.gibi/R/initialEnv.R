@@ -1,7 +1,9 @@
-initialEnvironment <- function(pluginEnv, type)
-{
-	if(type=="oneWayAov"){
-		initialEnvironment.oneWay(pluginEnv)
-	}
+.pluginVersion <- NULL
+.gibiVersion <- NULL
+.pluginName <- NULL
 
+
+init <- function()
+{
+	return(initialEnvironment.oneWay(pluginEnv))
 }

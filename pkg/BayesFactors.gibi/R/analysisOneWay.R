@@ -1,7 +1,68 @@
-analysisOneWay <- (model, data, singleProgress = NULL)
-	{
-				
+.compileData <- function(model, data)
+{
+	iv = data[,model$mdl$level.one[["Location"]][[1]]]
+	dv = data[,model$mdl$data$dv]
+	list(dependent=dv,independent=iv)
+}
+
+analysisOneWay <- function(model, data, singleProgress = NULL)
+	{	
+		model$data = .compileData(model, data)
+		dependent = model$data$dependent
+		independent = as.factor(model$data$independent)
+		rscale = as.numeric(model$mdl$priors$scale)
+
+
+		# Make data for MCMC; must be in matrix form
+		maxN = max(table(independent))
+		nlev = nlevels(independent)
+		y = matrix(NA,maxN,nlev)
+		listLevs = tapply(dependent,independent,c)
+		for(i in 1:nlev){
+			dataColumn = listLevs[[i]]
+			y[1:length(dataColumn),i] = dataColumn 
+		}
+		
+		iterations = as.numeric(model$anls$iterations)
+		burnin = as.numeric(model$anls$burnin)
+						
+		# Analysis function here
+		output = oneWayAOV.Gibbs(y, iterations = iterations, rscale = rscale, progress=FALSE)
+
+		chains = output$chains[(burnin+1):iterations,]
 			
+			
+		out = list(
+							diag = list(
+									convergence = list()
+									),
+							rslt = list(
+										samples = list(
+										 	chains
+										),
+										inferentials = list("Bayes Factor for delta=0"=output$BF),
+										posteriorMeans = list(
+											colMeans(chains)
+										),
+										posteriorSD = list(
+											apply(chains,2,sd)
+										),
+										MCerror = list(
+										
+										)
+									),
+							other = NULL,
+							debug = list(y=y)
+			)				
+
+	
+
+		return(out)
+	}
+
+
+analysisOneWay.old <- function(model, data, singleProgress = NULL)
+	{	
 		model$data = .compileData(model, data)	
 		dependent = model$data$dependent
 		independent = as.factor(model$data$independent)
@@ -50,7 +111,7 @@ analysisOneWay <- (model, data, singleProgress = NULL)
 										),
 										posteriorSD = list(
 												apply(chains,2,sd)
-										)
+										),
 										MCerror = list(
 									
 										),
