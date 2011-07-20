@@ -1,0 +1,12 @@
+Package: Gibi
+Type: Package
+Title: What the package does (short line)
+Version: 0.1
+Date: 2011-07-20
+Author: Jonathon Love, Richard D. Morey
+Maintainer: Richard D. Morey <richarddmorey@gmail.com>
+Depends: rjson, R.rsp
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+LazyLoad: yes
+Packaged: 2011-07-19 21:49:24 UTC; J

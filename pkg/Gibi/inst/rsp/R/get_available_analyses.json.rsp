@@ -1,0 +1,22 @@
+<%@page contentType="application/json"%>
+
+<% source('getvars.R') %>
+
+
+<%
+
+  # TODO: handle malformed gibi.txt files
+  
+  err <- try ({
+  
+    analysis.types <- Gibi:::get.available.analyses()
+  
+  })
+  
+  if (class(err) == "try-error") {
+    write(response, Gibi:::format.error(error.type="ErrorTerminal", error.message=err[1]))
+  } else {
+    write(response, Gibi:::format.to.send(as.list(analysis.types)))
+  }
+  
+%>

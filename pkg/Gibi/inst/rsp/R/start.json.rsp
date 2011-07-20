@@ -1,0 +1,33 @@
+<%@page contentType="application/json"%>
+
+<%
+
+  # TODO: handle malformed gibi.txt files
+  
+  err <- try ({
+  
+  packages         <- installed.packages()
+  search.paths     <- paste(packages[,'LibPath'], packages[,'Package'], "inst/etc/gibi.txt", sep="/")
+  gibi.plugins     <- subset(packages, file.exists(search.paths))
+  
+  analysis.types <- list()
+
+  for (plugin.name in gibi.plugins[,1]) {
+
+    plugin <- gibi.plugins[plugin.name,]
+    descriptors.path <- paste(plugin['LibPath'], plugin['Package'], "inst/etc/gibi.txt", sep="/")
+    descriptors <- read.table(descriptors.path, as.is=T, col.names=c("name", "nice.name", "short.desc", "long.desc", "init.func"))
+
+    for (i in 1:length(descriptors[,1]))
+      analysis.types[[length(analysis.types)+1]] <- as.list(descriptors[i,])
+  }
+  
+  })
+  
+  if (class(err) == "try-error") {
+    write(response, Gibi:::format.error(error.type="ErrorTerminal", error.message=err[1]))
+  } else {
+    write(response, Gibi:::format.to.send(as.list(analysis.types)))
+  }
+  
+%>

@@ -1,0 +1,187 @@
+<%@page contentType="application/json"%>
+
+<%  %>
+
+<% source('getvars.R') %>
+
+<%
+  
+  if (is.environment(gibi.env$ifc) && "data" %in% ls(gibi.env$ifc) && is.environment(gibi.env$ifc$data)) {
+    
+    if ( ! is.environment(gibi.env$usr))
+      gibi.env$usr = new.env()
+    
+    if ( ! ("data" %in% ls(gibi.env$usr)) || ! is.environment(gibi.env$usr$data))
+      gibi.env$usr$data = new.env()
+    
+    ifc.env <- gibi.env$ifc$data
+    usr.env <- gibi.env$usr$data
+  
+    # get all the data frames in the global environment
+  
+    objects <- ls(envir = globalenv())
+    filter  <- sapply(objects, function(x) { eval(parse(text=paste("is.data.frame(",x,")"))) })
+    data.frames <- objects[filter]
+    dfs <- data.frames
+    
+    # check if new values have been POSTed
+  
+    post <- FALSE
+    if (hasParameter(request, "set")) {
+      post <- TRUE
+      post.values <- Gibi:::parse.receive(getParameter(request, "set"))[["data"]]
+    }
+  
+    if (post && "df" %in% names(post.values))   # new data.frame has been selected
+      usr.env$df <- post.values$df
+
+    # check that selected data.frame exists
+    
+    if ( ! ("df" %in% ls(usr.env)) || ! (usr.env$df %in% data.frames)) {
+      if (length(data.frames) > 0)
+        usr.env$df <- data.frames[1]
+      else
+        usr.env$df <- ""
+    }
+    
+    if (usr.env$df != "") {       # if data.frame is good
+    
+      data.frame <- eval(parse(text=usr.env$df))
+      all.cols <- names(data.frame)
+      cols.left <- all.cols
+      
+      # check that vars is set up properly in ifc.env and usr.env
+          
+      if ( ! "vars" %in% ls(ifc.env))
+        ifc.env$vars <- list()
+        
+      if ( ! is.list(ifc.env$vars))
+        ifc.env$vars <- list()
+    
+      if ( ! "vars" %in% ls(usr.env))
+        usr.env$vars <- list()
+        
+      if ( ! is.list(usr.env$vars))
+        usr.env$vars <- list()
+      
+      for (var.name in names(ifc.env$vars)) {
+        if ( ! var.name %in% names(usr.env$vars))
+          usr.env$vars[[var.name]] <- ""
+      }
+      
+      # handle POSTed assignments of variables
+      
+      if (post && "vars" %in% names(post.values)) {
+      
+        for (var in names(post.values$vars)) {
+          
+          value <- post.values$vars[[var]]
+          
+          if (var %in% names(ifc.env$vars) && value %in% cols.left) {
+            usr.env$vars[[var]] <- value
+          }
+        }
+      }
+      
+      # remove cols assigned to variables
+      
+      cols.left <- cols.left[ ! cols.left %in% usr.env$vars]      
+      
+      # clear variables assigned to non-existent columns
+      
+      for (var in names(usr.env$vars)) {
+        if ( ! usr.env$vars[[var]] %in% all.cols)
+          usr.env$vars[[var]] <- ""
+      }
+      
+      # check and setup columns for analysis
+      
+      if ( ! "cols" %in% ls(ifc.env))
+        ifc.env$cols <- list()
+        
+      if ( ! is.list(ifc.env$cols))
+        ifc.env$cols <- list()
+    
+      if ( ! "cols" %in% ls(usr.env))
+        usr.env$cols <- list()
+        
+      if ( ! is.list(usr.env$cols))
+        usr.env$cols <- list()
+        
+      for (col.cat in names(ifc.env$cols)) {
+        if ( ! col.cat %in% names(usr.env$cols)) {
+          usr.env$cols[[col.cat]] <- list()
+        }
+      }
+
+      # handle POSTed cols
+      
+      if (post && "cols" %in% names(post.values)) {
+        for (col.cat in names(post.values$cols)) {
+          usr.env$cols[[col.cat]] <- as.list(post.values$cols[[col.cat]])
+        }
+      }
+      
+      # clear categories which don't exist
+      
+      for (col.cat in names(usr.env$cols)) {
+        if ( ! col.cat %in% names(ifc.env$cols))
+          usr.env$cols[[col.cat]] <- NULL
+      }
+      
+      # clear columns which don't exist
+      
+      for (col.cat in names(usr.env$cols)) {
+        cols.in.cat <- usr.env$cols[[col.cat]]
+        cols.in.cat <- cols.in.cat[cols.in.cat %in% all.cols]
+        usr.env$cols[[col.cat]] <- cols.in.cat
+      }
+      
+      # remove assigned columns from columns list
+      
+      cols.assigned <- unlist(usr.env$cols)
+      cols.left <- cols.left[ ! cols.left %in% cols.assigned]
+      
+      # check if ready for analysis
+      
+      assignments <- list()
+      
+      for (col.cat in names(usr.env$cols)) {
+        assignments[[col.cat]] <- usr.env$cols[[col.cat]]
+      }
+      
+      for (var.name in names(usr.env$vars)) {
+        assignments[[var.name]] <- usr.env$vars[[var.name]]
+      }
+      
+      ready <- FALSE
+      if ( ! is.null(ifc.env$check))
+        ready <- ifc.env$check(assignments)
+      
+    } else {
+      cols.left <- NULL
+      ready <- FALSE
+    }
+    
+    data <- list()
+    data$dfs  <- as.list(dfs)
+    data$df   <- usr.env$df
+    data$cols <- as.list(usr.env$cols)
+    data$cols.left <- as.list(cols.left)
+    data$vars <- as.list(usr.env$vars)
+    data$ready <- ready
+    
+  } else {
+  
+    data <- list()
+    data$dfs  <- list()
+    data$df   <- ""
+    data$cols <- list()
+    data$cols.left <- list()
+    data$vars <- list()
+  }
+  
+  
+  
+%>
+<%=Gibi:::format.to.send(data)%>

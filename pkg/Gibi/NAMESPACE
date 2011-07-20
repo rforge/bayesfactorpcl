@@ -1,0 +1,4 @@
+#useDynLib(Gibi)
+
+#exportPattern("^[^\\.]")
+export(Gibi)

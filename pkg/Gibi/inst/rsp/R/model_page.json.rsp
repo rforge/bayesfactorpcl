@@ -1,0 +1,169 @@
+<%@page contentType="application/json"%>
+
+<% source('getvars.R') %>
+
+
+<%
+  
+  if ( ! ("models" %in% ls(gibi.env$usr)) || ! is.environment(gibi.env$usr$models))
+    gibi.env$usr$models <- new.env()
+      
+  ifc <- gibi.env$ifc$models
+  usr <- gibi.env$usr$models
+  
+  #if ( ! "sel.model" %in% ls(usr))
+  #  usr$sel.model <- list()
+    
+  if ( ! "models" %in% ls(usr))
+    usr$models <- list()
+    
+  if ( ! "level.one" %in% ls(usr))
+    usr$level.one <- list()
+  
+  # check if new values have been POSTed
+  
+  post <- FALSE
+  if (hasParameter(request, "set")) {
+    post <- TRUE
+    post.values <- Gibi:::parse.receive(getParameter(request, "set"))[["data"]]
+  }
+  
+  if (post && "action" %in% names(post.values)) {  # create new model
+    if (post.values$action == "create") {
+      
+      name   <- "Model #1"
+      i <- 1
+        
+      while (name %in% names(usr$models)) {
+        name <- paste("Model #", i, sep="")
+        i <- i + 1
+      }
+        
+      model <- list(Name=name)
+      
+      if ( ! is.null(ifc$create.default))
+        model  <- append(model, ifc$create.default())
+        
+      usr$models[[name]] <- model
+      
+    } else if (post.values$action == "select" && is.character(post.values$select)) {
+      sel.model.name <- post.values$select
+      if (sel.model.name %in% names(usr$models)) {
+        usr$sel.model <- usr$models[[sel.model.name]]
+      }
+    } else if (post.values$action == "add.to.l1" && is.character(post.values$sel.model) && is.character(post.values$param) && is.list(post.values$data)) {
+      
+      sel.model.name <- post.values$sel.model
+      param <- post.values$param
+      
+      if (sel.model.name %in% names(usr$models)) {
+        usr$sel.model <- usr$models[[sel.model.name]]
+        
+        if (param %in% names(usr$sel.model$level.one)) {
+          usr$sel.model$level.one[[param]] <- union(usr$sel.model$level.one[[param]], unlist(post.values$data))
+        }
+        
+        usr$sel.model$results <- NULL
+        usr$sel.model$status  <- NULL
+        usr$sel.model$analysis.desc <- NULL
+
+        usr$models[[sel.model.name]] <- usr$sel.model
+      }
+    } else if (post.values$action == "remove.from.l1" && is.character(post.values$sel.model) && is.list(post.values$data)) {
+      
+      sel.model.name <- post.values$sel.model
+      param <- post.values$param
+      
+      if (sel.model.name %in% names(usr$models)) {
+        usr$sel.model <- usr$models[[sel.model.name]]
+        
+        for (param in names(post.values$data)) {
+          if (param %in% names(usr$sel.model$level.one)) {
+            tmp <- unlist(usr$sel.model$level.one[[param]])
+            tmp <- tmp[ ! tmp %in% post.values$data[[param]] ]
+            usr$sel.model$level.one[[param]] <- as.list(tmp)
+          }
+        }
+        
+        usr$sel.model$results <- NULL
+        usr$sel.model$status  <- NULL
+        usr$sel.model$analysis.desc <- NULL
+
+        usr$models[[sel.model.name]] <- usr$sel.model
+      }
+    } else if (post.values$action == "add.to.l2" && is.character(post.values$sel.model) && is.character(post.values$param) && is.list(post.values$data)) {
+      
+      sel.model.name <- post.values$sel.model
+      param <- post.values$param
+      
+      if (sel.model.name %in% names(usr$models)) {
+        usr$sel.model <- usr$models[[sel.model.name]]
+        
+        if (param %in% names(usr$sel.model$level.two)) {
+          for (param.l1 in names(post.values$data)) {
+            if (length(post.values$data[[param.l1]]) > 0)
+              usr$sel.model$level.two[[param]] <- union(usr$sel.model$level.two[[param]], paste(post.values$data[[param.l1]], param.l1, sep="."))
+          }
+        }
+        
+        usr$sel.model$results <- NULL
+        usr$sel.model$status  <- NULL
+        usr$sel.model$analysis.desc <- NULL
+
+        usr$models[[sel.model.name]] <- usr$sel.model
+      }
+    } else if (post.values$action == "remove.from.l2" && is.character(post.values$sel.model) && is.list(post.values$data)) {
+      
+      sel.model.name <- post.values$sel.model
+      param <- post.values$param
+      
+      if (sel.model.name %in% names(usr$models)) {
+        usr$sel.model <- usr$models[[sel.model.name]]
+        
+        for (param in names(post.values$data)) {
+          if (param %in% names(usr$sel.model$level.two)) {
+            tmp <- unlist(usr$sel.model$level.two[[param]])
+            tmp <- tmp[ ! tmp %in% post.values$data[[param]] ]
+            usr$sel.model$level.two[[param]] <- as.list(tmp)
+          }
+        }
+        
+        usr$sel.model$results <- NULL
+        usr$sel.model$status  <- NULL
+        usr$sel.model$analysis.desc <- NULL
+
+        usr$models[[sel.model.name]] <- usr$sel.model
+      }
+    }
+  }
+  
+  # correct for bad model selection
+    
+  if ( ! "sel.model" %in% ls(usr)) {
+    if (length(usr$models) > 0)
+      usr$sel.model <- usr$models[[1]]
+  }
+  
+  data <- list()
+  
+  data$can.add <- TRUE  # // TODO
+  
+  if (is.function(ifc$create.description)) {
+    data$models <- lapply(usr$models, function(m) append(list(Name=m$Name), ifc$create.description(m)))
+  } else {
+    data$models <- lapply(usr$models, function(m) list(Name=m$Name) )
+  }
+  
+  data$sel.model$Name <- usr$sel.model$Name
+  data$sel.model$level.one <- usr$sel.model$level.one
+  data$sel.model$level.two <- usr$sel.model$level.two
+  data$sel.model$prior     <- usr$sel.model$prior
+  
+  if (is.function(ifc$create.effects)) {
+    data$effects <- ifc$create.effects(gibi.env$usr$data$cols)
+  } else {
+    data$effects <- list()
+  }
+  
+%>
+<%=Gibi:::format.to.send(data)%>

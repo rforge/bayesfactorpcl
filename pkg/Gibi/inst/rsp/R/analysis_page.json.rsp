@@ -1,0 +1,59 @@
+<%@page contentType="application/json"%>
+
+<% source('getvars.R') %>
+
+<%
+  
+  if ( ! ("models" %in% ls(gibi.env$usr)) || ! is.environment(gibi.env$usr$models))
+    gibi.env$usr$models <- new.env()
+      
+  ifc <- gibi.env$ifc$analysis
+  usr <- gibi.env$usr$models
+    
+  if ( ! "models" %in% ls(usr))
+    usr$models <- list()
+    
+  if ( ! "settings" %in% ls(usr))
+    usr$settings <- ifc$settings
+  
+  # check if new values have been POSTed
+  
+  post <- FALSE
+  if (hasParameter(request, "set")) {
+    post <- TRUE
+    post.values <- Gibi:::parse.receive(getParameter(request, "set"))[["data"]]
+  }
+  
+  if (post && "action" %in% names(post.values)) {
+    if (post.values$action == "run" && "sel.models" %in% names(post.values)) {
+      for (model.name in post.values$sel.models) { 
+        if (model.name %in% names(usr$models)) {
+          model <- usr$models[[model.name]]
+          if (is.function(ifc$run))
+            model <- ifc$run(model, usr$settings, function(x){})
+          model$status <- list(Status="Complete", Progress="100%")
+          usr$models[[model.name]] <- model
+        }
+      }
+    }
+  }
+  
+  for (model.name in names(usr$models)) {
+    if ( ! "status" %in% names(usr$models[[model.name]]))
+      usr$models[[model.name]]$status <- list(Status="Ready", Progress="")
+    if (is.function(ifc$create.description)) {
+      usr$models[[model.name]]$analysis.desc <- ifc$create.description(usr$models[[model.name]])
+    }
+  }
+  
+  data <- list()
+  data$models <- list()
+  
+  for (model.name in names(usr$models)) {
+    data$models[[model.name]] <- append(list(Name=model.name, Status=usr$models[[model.name]]$status$Status, Progress=usr$models[[model.name]]$status$Progress), usr$models[[model.name]]$analysis.desc)
+  }
+  
+  data$settings <- usr$settings
+  
+%>
+<%=Gibi:::format.to.send(data)%>

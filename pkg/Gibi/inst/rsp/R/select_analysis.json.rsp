@@ -1,0 +1,56 @@
+<%@page contentType="application/json"%>
+
+<% source('getvars.R') %>
+
+
+<%
+  
+  err <- try ({
+  
+  selected.analysis <- ""
+  
+  if (hasParameter(request, "set")) {
+    
+    post.values <- Gibi:::parse.receive(getParameter(request, "set"))[["data"]]
+  
+    if ("sel" %in% names(post.values)) {
+      
+      selected.analysis <- as.character(post.values$sel)
+      available.analyses <- Gibi:::get.available.analyses()
+      
+      init.func <- NULL
+      
+      for (analysis in available.analyses) {
+        if (analysis$name == selected.analysis) {
+          init.func <- analysis$init.func
+          break;
+        }
+      }
+      
+      if ( ! is.null(init.func)) {
+        #gibi.env <- new.env(parent=baseenv())
+        
+        ifc <- eval(expr=parse(text=init.func))
+        
+        # TODO check that ifc is ok
+        
+        gibi.env$ifc <- ifc
+      } else {
+        stop("Unable to match analysis")
+      }
+      
+    } else {
+      stop("No analysis specified")
+    }
+  
+  }
+  
+  })
+  
+  if (class(err) == "try-error") {
+    write(response, Gibi:::format.error(error.type="Terminal", error.message=err[1]))
+  } else {
+    write(response, Gibi:::format.to.send(list(sel=selected.analysis)))
+  }
+  
+%>
