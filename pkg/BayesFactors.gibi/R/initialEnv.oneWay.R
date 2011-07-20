@@ -14,6 +14,8 @@ initialEnvironment.oneWay <- function()
 
   ifc$models$create.default <- BayesFactors.gibi:::create.model
   ifc$models$create.description <- BayesFactors.gibi:::create.description
+  ifc$models$create.effects <- BayesFactors.gibi:::create.effects
+
 
   ifc$pluginVersion = .pluginVersion
   ifc$gibiVersion = .gibiVersion
@@ -23,13 +25,18 @@ initialEnvironment.oneWay <- function()
   return(ifc)
 }
 
+create.effects <- function(columns)
+{
+	return(columns)
+}
+
 
 create.description <- function(model) 
 {
   
   if(!is.null(model$anls))
 	{
-  		list("IV" = model$mdl$level.one[["Location"]][[1]],
+  		return(list("IV" = model$mdl$level.one[["Location"]][[1]],
   			 "Levels" = nlevels(as.factor(model$data$independent)),
 			 "BF" = model$out$rslt$inferentials[[1]],
 			 "post. mean mu" = model$out$rslt$posteriorMeans[,1],
@@ -37,9 +44,10 @@ create.description <- function(model)
 			 #"MC error delta" = model$out$rslt$MCerror[,1]
 			 "scale" = model$mdl$priors$rscale
 			 )
+		)
 			 
 	}else{
-	  		list("IV" = model$mdl$level.one[["Location"]][[1]],
+	  	return(list("IV" = model$mdl$level.one[["Location"]][[1]],
   			 "Levels" = nlevels(as.factor(model$data$independent)),
 			 "BF" = "",
 			 "post. mean delta" = "",
@@ -47,8 +55,7 @@ create.description <- function(model)
 			 #"MC error delta" = "
 			 "scale" = ""
 			 )
-
-	
+		)
 	}
 
 

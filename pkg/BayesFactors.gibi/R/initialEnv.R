@@ -5,5 +5,5 @@
 
 init <- function()
 {
-	return(initialEnvironment.oneWay(pluginEnv))
+	return(initialEnvironment.oneWay())
 }
