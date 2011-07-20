@@ -8,12 +8,12 @@
     gibi.env$usr$models <- new.env()
       
   ifc <- gibi.env$ifc$analysis
-  usr <- gibi.env$usr$models
+  usr <- gibi.env$usr
     
-  if ( ! "models" %in% ls(usr))
+  if ( ! "models" %in% ls(usr$models))
     usr$models <- list()
     
-  if ( ! "settings" %in% ls(usr))
+  if ( ! "settings" %in% ls(usr$models))
     usr$settings <- ifc$settings
   
   # check if new values have been POSTed
@@ -27,30 +27,33 @@
   if (post && "action" %in% names(post.values)) {
     if (post.values$action == "run" && "sel.models" %in% names(post.values)) {
       for (model.name in post.values$sel.models) { 
-        if (model.name %in% names(usr$models)) {
-          model <- usr$models[[model.name]]
+        if (model.name %in% names(usr$models$models)) {
+          model <- usr$models$models[[model.name]]
           if (is.function(ifc$run))
-            model <- ifc$run(model, usr$settings, function(x){})
+            model$results <- ifc$run(model = model, 
+            				settings = usr$settings, 
+            				data = usr$data,
+            				progress.callback = function(x){})
           model$status <- list(Status="Complete", Progress="100%")
-          usr$models[[model.name]] <- model
+          usr$models$models[[model.name]] <- model
         }
       }
     }
   }
   
-  for (model.name in names(usr$models)) {
-    if ( ! "status" %in% names(usr$models[[model.name]]))
-      usr$models[[model.name]]$status <- list(Status="Ready", Progress="")
+  for (model.name in names(usr$models$models)) {
+    if ( ! "status" %in% names(usr$models$models[[model.name]]))
+      usr$models$models[[model.name]]$status <- list(Status="Ready", Progress="")
     if (is.function(ifc$create.description)) {
-      usr$models[[model.name]]$analysis.desc <- ifc$create.description(usr$models[[model.name]])
+      usr$models$models[[model.name]]$analysis.desc <- ifc$create.description(usr$models$models[[model.name]])
     }
   }
   
   data <- list()
   data$models <- list()
   
-  for (model.name in names(usr$models)) {
-    data$models[[model.name]] <- append(list(Name=model.name, Status=usr$models[[model.name]]$status$Status, Progress=usr$models[[model.name]]$status$Progress), usr$models[[model.name]]$analysis.desc)
+  for (model.name in names(usr$models$models)) {
+    data$models[[model.name]] <- append(list(Name=model.name, Status=usr$models$models[[model.name]]$status$Status, Progress=usr$models$models[[model.name]]$status$Progress), usr$models$models[[model.name]]$analysis.desc)
   }
   
   data$settings <- usr$settings

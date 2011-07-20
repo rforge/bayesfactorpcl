@@ -33,22 +33,24 @@
     }
   
     if (post && "df" %in% names(post.values))   # new data.frame has been selected
-      usr.env$df <- post.values$df
+      usr.env$df.name <- post.values$df
 
     # check that selected data.frame exists
     
-    if ( ! ("df" %in% ls(usr.env)) || ! (usr.env$df %in% data.frames)) {
+    if ( ! ("df" %in% ls(usr.env)) || ! (usr.env$df.name %in% data.frames)) {
       if (length(data.frames) > 0)
-        usr.env$df <- data.frames[1]
+        usr.env$df.name <- data.frames[1]
       else
-        usr.env$df <- ""
+        usr.env$df.name <- ""
     }
     
-    if (usr.env$df != "") {       # if data.frame is good
+    if (usr.env$df.name != "") {       # if data.frame is good
     
-      data.frame <- eval(parse(text=usr.env$df))
-      all.cols <- names(data.frame)
+      usr.env$df.data = eval(parse(text=usr.env$df.name))
+      
+      all.cols <- names(usr.env$df.data)
       cols.left <- all.cols
+      
       
       # check that vars is set up properly in ifc.env and usr.env
           

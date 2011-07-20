@@ -10,12 +10,19 @@ initialEnvironment.oneWay <- function()
 
   ifc$data$check <- check.temp
 
-  ifc$models <- new.env(parent=baseenv())
-
+  ifc$models <- new.env(parent=baseenv()) 
+   
   ifc$models$create.default <- BayesFactors.gibi:::create.model
   ifc$models$create.description <- BayesFactors.gibi:::create.description
   ifc$models$create.effects <- BayesFactors.gibi:::create.effects
-
+  
+  ifc$analysis <- new.env(parent=baseenv())
+  ifc$analysis$settings <- list(MCMC=list(
+  								'MCMC iterations'=1000,
+  								'Burnin iterations'=200
+  							))
+  ifc$analysis$create.description <- BayesFactors.gibi:::create.description
+  ifc$analysis$run <- BayesFactors.gibi:::analysisOneWay
 
   ifc$pluginVersion = .pluginVersion
   ifc$gibiVersion = .gibiVersion
@@ -33,21 +40,20 @@ create.effects <- function(columns)
 
 create.description <- function(model) 
 {
-  
-  if(!is.null(model$anls))
+  if(!is.null(model$results))
 	{
-  		return(list("IV" = model$mdl$level.one[["Location"]][[1]],
+  		return(list("IV" = model$level.one[["Location"]][[1]],
   			 "Levels" = nlevels(as.factor(model$data$independent)),
-			 "BF" = model$out$rslt$inferentials[[1]],
-			 "post. mean mu" = model$out$rslt$posteriorMeans[,1],
-			 "post. sd delta" = model$out$rslt$posteriorSD[,1],
-			 #"MC error delta" = model$out$rslt$MCerror[,1]
-			 "scale" = model$mdl$priors$rscale
+			 "BF" = model$results$rslt$inferentials[[1]],
+			 "post. mean mu" = model$results$rslt$posteriorMeans[[1]][1][[1]],
+			 "post. sd mu" = model$results$rslt$posteriorSD[[1]][1][[1]],
+			 #"MC error mu" = model$results$rslt$MCerror[[1]][1][[1]],
+			 "scale" = model$prior[["Effect size"]]$scale
 			 )
 		)
 			 
 	}else{
-	  	return(list("IV" = model$mdl$level.one[["Location"]][[1]],
+	  	return(list(#"IV" = model$level.one[["Location"]][[1]],
   			 "Levels" = nlevels(as.factor(model$data$independent)),
 			 "BF" = "",
 			 "post. mean delta" = "",

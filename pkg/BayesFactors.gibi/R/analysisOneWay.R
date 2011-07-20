@@ -1,16 +1,16 @@
 .compileData <- function(model, data)
 {
-	iv = data[,model$mdl$level.one[["Location"]][[1]]]
-	dv = data[,model$mdl$data$dv]
+	iv = data$df.data[,model$level.one[["Location"]][[1]]]
+	dv = data$df.data[,data$vars$dv]
 	list(dependent=dv,independent=iv)
 }
 
-analysisOneWay <- function(model, data, singleProgress = NULL)
+analysisOneWay <- function(model, settings, data, progress.callback = NULL,...)
 	{	
-		model$data = .compileData(model, data)
-		dependent = model$data$dependent
-		independent = as.factor(model$data$independent)
-		rscale = as.numeric(model$mdl$priors$scale)
+		datalist = .compileData(model, data)
+		dependent = datalist$dependent
+		independent = as.factor(datalist$independent)
+		rscale = as.numeric(model$prior[["Effect size"]]$scale)
 
 
 		# Make data for MCMC; must be in matrix form
@@ -23,8 +23,8 @@ analysisOneWay <- function(model, data, singleProgress = NULL)
 			y[1:length(dataColumn),i] = dataColumn 
 		}
 		
-		iterations = as.numeric(model$anls$iterations)
-		burnin = as.numeric(model$anls$burnin)
+		iterations = as.numeric(settings$MCMC[['MCMC iterations']])
+		burnin = as.numeric(settings$MCMC[['Burnin iterations']])
 						
 		# Analysis function here
 		output = oneWayAOV.Gibbs(y, iterations = iterations, rscale = rscale, progress=FALSE)
@@ -33,6 +33,9 @@ analysisOneWay <- function(model, data, singleProgress = NULL)
 			
 			
 		out = list(
+							settings = list(iterations=iterations,
+											burnin=burnin
+									),
 							diag = list(
 									convergence = list()
 									),
@@ -52,10 +55,11 @@ analysisOneWay <- function(model, data, singleProgress = NULL)
 										)
 									),
 							other = NULL,
-							debug = list(y=y)
+							debug = list(data=datalist,
+										 all.data=data,
+										 y=y
+									)
 			)				
-
-	
 
 		return(out)
 	}
