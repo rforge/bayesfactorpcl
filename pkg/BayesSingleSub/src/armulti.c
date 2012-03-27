@@ -1,4 +1,5 @@
-#include "BFPCL.h"
+/*
+#include "utility.h"
 
 SEXP RgibbsTwoSampleARmulti(SEXP yR, SEXP NR, SEXP NobsR, SEXP tR, SEXP rscaleR, SEXP betaThetaR, SEXP iterationsR, SEXP sdmetR, SEXP progressR, SEXP pBar, SEXP rho)
 {
@@ -271,3 +272,4 @@ SEXP RthetaLogLikeARmulti(SEXP thetaR, SEXP mu0R, SEXP betaR, SEXP sig2R, SEXP g
 	return(ret);
 	
 }
+*/
