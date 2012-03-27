@@ -21,7 +21,7 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 	X = cbind(1,treat)
 	X = cbind(X,X*timePoint)
 	
-	out = .Call("RgibbsTwoSampleAR_trend", y, N, X, ncol(X), r.scaleInt, r.scaleSlp, alphaTheta, betaTheta, intArea[1], intArea[2], slpArea[1], slpArea[2], iterations, sdMet, progress, pbFun, new.env(), package="BayesFactorPCL")
+	out = .Call("RgibbsTwoSampleAR_trend", as.numeric(y), N, X, ncol(X), r.scaleInt, r.scaleSlp, alphaTheta, betaTheta, intArea[1], intArea[2], slpArea[1], slpArea[2], iterations, sdMet, progress, pbFun, new.env(), package="BayesSingleSub")
 	
 	if(progress) close(pb)
 	
@@ -79,7 +79,7 @@ trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scale
 	
 	nullLike = log(trendtest.nullMargLikeAR(y,X[,c(1,3)],alphaTheta,betaTheta))
 
-	out = .Call("MCAR_trend", y, N, alphaTheta, betaTheta, r.scaleInt^2, r.scaleSlp^2, X[,c(1,3)], X[,c(2,4)], iterations, progress, pbFun, new.env(), package="BayesFactorPCL")
+	out = .Call("MCAR_trend", y, N, alphaTheta, betaTheta, r.scaleInt^2, r.scaleSlp^2, X[,c(1,3)], X[,c(2,4)], iterations, progress, pbFun, new.env(), package="BayesSingleSub")
 
 	if(progress) close(pb)
 	
