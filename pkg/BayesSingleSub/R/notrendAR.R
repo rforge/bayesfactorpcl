@@ -46,9 +46,9 @@ ttest.Gibbs.AR = function(before,after,iterations=1000,areaNull=c(-.2,.2),treat=
 	
 	if(return.chains)
 	{
-		return(list(logbf=logbf,chains=mcmc(chains),logbfArea=logbfArea,acc=acc))
+		return(list(logbf.delta=logbf,chains=mcmc(chains[,c(1,8,4,5,6)]),acc=acc,logbfArea=logbfArea))
 	}else{
-		return(c(logbf=logbf))
+		return(c(logbf.delta=logbf))
 	}
 }
 

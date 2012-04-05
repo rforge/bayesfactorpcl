@@ -28,7 +28,7 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 	#dim(out[[2]]) = c(,iterations)
 	dim(out[[1]]) = c(ncol(X) + 4, iterations)
 	out[[1]] = data.frame(t(out[[1]]))
-	colnames(out[[1]]) = c(paste("beta",1:ncol(X),sep=""),"sig2","g1","g2","rho")#,"densFullRes", "densSlpRes","densIntRes","areaInt","areaSlp")
+	colnames(out[[1]]) = c("mu",paste("B",1:(ncol(X)-1),sep=""),"sig2","g1","g2","rho")#,"densFullRes", "densSlpRes","densIntRes","areaInt","areaSlp")
 	
 	ldens = out[[2]][1:3] - log(iterations)#apply(chains[,9:11],2,logMeanExpLogs)
 	nulllogdens = c(
@@ -38,7 +38,7 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 				dcauchy(0,log=TRUE) - log(r.scaleInt)
 				)
 	logbf = ldens - nulllogdens
-	
+		
 	areas = log(out[[2]][4:5]) - log(iterations)#log(colMeans(chains[,12:13]))
 	nullAreas = log(c(
 				diff(pcauchy(intArea,scale=r.scaleInt)),
@@ -49,9 +49,9 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 	
 	if(return.chains)
 	{
-		return(list(logbf=logbf, chains=mcmc(out[[1]]), acc=acc, logbfArea=areas - nullAreas,debug=NULL))
+		return(list(logbf=matrix(logbf, nrow=1, dimnames=list(c(""),c("logbf.joint","logbf.trend","logbf.int"))), chains=mcmc(out[[1]]), acc=acc, logbfArea=matrix(areas - nullAreas, nrow=1, dimnames=list(c(""),c("logbf.int","logbf.trend")))))
 	}else{
-		return(c(logbf=logbf))
+		return(logbf=matrix(logbf, nrow=1, dimnames=list(c(""),c("logbf.joint","logbf.trend","logbf.int"))))
 	}
 }
 
@@ -90,7 +90,7 @@ trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scale
 	if(return.chains){	
 		return(list(bfs,nullLike,altLike,t(out[[2]])))
 	}else{
-		return(list(bfs,nullLike,altLike))
+		return(list(bfs=matrix(bfs, nrow=1, dimnames=list(c(""),c("logbf.joint","logbf.trend","logbf.int")))))
 	}
 
 
