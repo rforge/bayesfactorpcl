@@ -3,11 +3,12 @@
 \alias{BayesSingleSub}
 \docType{package}
 \title{
-Functions to compute Bayes factor hypothesis tests for common research designs and hypotheses.
+Functions to obtain Bayes factor hypothesis tests and posterior samples of parameters for single case data.
 }
 \description{
-This package contains function to compute Bayes factors for a number of research designs and hypotheses, including
-$t$ tests, ANOVA, and linear regression. 
+This package contains functions to compute Bayes factors for the mean difference, trend difference, and intercept 
+difference in single case data sequences. Some functions also provide posterior samples of parameters and interval 
+null Bayes factors.
 }
 \details{
 \tabular{ll}{
@@ -20,7 +21,10 @@ LazyLoad: \tab yes\cr
 }
 The following functions are currently implemented, with more to follow:
 
-ttest.Gibbs.AR(): Computes a Bayes factor for one- and two-sample designs
+ttest.Gibbs.AR(): Compute Bayes factor for mean difference using Gibbs sampling and obtain posterior samples of parameters
+ttest.MCGQ.AR(): Compute Bayes factor for mean difference using monte carlo integration
+trendtest.Gibbs.AR(): Compute Bayes factors for trend and intercept differences using Gibbs sampling and obtain posterior samples of parameters
+trendtest.MC.AR(): Compute Bayes factors for trend and intercept differences using monte carlo integration
 
 }
 \author{
@@ -29,11 +33,8 @@ Richard D. Morey and Rivka de Vries
 Maintainer: Richard D. Morey <richarddmorey@gmail.com>
 }
 \references{
-Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., \& Iverson, G. (2009). Bayesian t–tests
-for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 752-760
-
-Morey, R. D., Rouder, J. N., Pratte, M. S., \& Speckman, P. L. (submitted). Conditional Marginal Density 
-Estimation to Improve Bayes Factor Computation.
+De Vries, R. M. \& Morey, R. D. (2012). Statistical analysis of single-subject
+data: A Bayesian model. Psychological Methods, ????.
 
 Perception and Cognition Lab (University of Missouri): Bayes factor calculators. \url{http://pcl.missouri.edu/bayesfactor}
 }
