@@ -55,7 +55,7 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 	}
 }
 
-trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scaleSlp=1,alphaTheta=1,betaTheta=5, progress=TRUE,return.chains=FALSE)
+trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scaleSlp=1,alphaTheta=1,betaTheta=5, progress=TRUE)
 {
 	y = c(before,after)
 	N = length(y)	
@@ -87,12 +87,7 @@ trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scale
 	
 	bfs = c(nullLike-altLike[1],altLike[2]-altLike[1],altLike[3]-altLike[1])
 	
-	if(return.chains){	
-		return(list(bfs,nullLike,altLike,t(out[[2]])))
-	}else{
-		return(list(bfs=matrix(bfs, nrow=1, dimnames=list(c(""),c("logbf.joint","logbf.trend","logbf.int")))))
-	}
-
+	return(bfs=matrix(bfs, nrow=1, dimnames=list(c(""),c("logbf.joint","logbf.trend","logbf.int"))))
 
 }	
 

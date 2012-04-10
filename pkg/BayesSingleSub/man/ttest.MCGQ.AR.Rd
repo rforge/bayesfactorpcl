@@ -6,10 +6,10 @@ Obtain Bayesian t test for single case data
 }
 \description{
 This function computes a Bayes factor for the mean difference between two phases of a single subject data sequence, 
-using monte carlo integration.
+using monte carlo integration or Gaussian quadrature.
 }
 \usage{
-ttest.MCGQ.AR(before, after, iterations = 10000, r.scale = 1, alphaTheta = 1, betaTheta = 5)
+ttest.MCGQ.AR(before, after, iterations = 1000, treat = NULL, method = "MC", r.scale = 1, alphaTheta = 1, betaTheta = 5)
 }
 \arguments{
   \item{before}{
@@ -21,7 +21,13 @@ A vector of observations, in time order, taken in Phase 2 (e.g., after the treat
   \item{iterations}{
 Number of Gibbs sampler iterations to perform.
 }
-  \item{r.scale}{
+\item{treat}{
+Vector of dummy coding, indicating Phase 1 and Phase 2; default is -.5 for Phase 1 and .5 for Phase 2.
+}
+\item{method}{
+Method to be used to compute the Bayes factor; "MC" is monte carlo integration, "GQ" is gaussian quadrature.
+}
+ \item{r.scale}{
 Prior scale for delta (see Details below).
 }
 \item{alphaTheta}{
@@ -33,7 +39,7 @@ The beta parameter of the beta prior on theta (see Details below).
 }
 \details{
 This function computes a Bayes factor for the mean difference between two data sequences from a single subject,
- using monte carlo integration. The Bayes factor compares the null hypothesis of no true mean difference against the 
+ using monte carlo integration or Gaussian quadrature. The Bayes factor compares the null hypothesis of no true mean difference against the 
 alternative hypothesis of a true mean difference. A Bayes factor larger than 1 supports the null hypothesis,
  a Bayes factor smaller than 1 supports the alternative hypothesis. Auto-correlation of the errors is modeled by a first
  order auto-regressive process.
@@ -44,7 +50,7 @@ placed on the variance of the random shocks of the auto-regressive process. A be
  theta. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
 }
 \value{
-\item{logbf}{A monte carlo estimate of the log Bayes factor.}
+\item{logbf}{A monte carlo or Gaussian quadrature estimate of the log Bayes factor.}
 }
 \references{
 Perception and Cognition Lab (University of Missouri): Bayes factor calculators. \url{http://pcl.missouri.edu/bayesfactor}

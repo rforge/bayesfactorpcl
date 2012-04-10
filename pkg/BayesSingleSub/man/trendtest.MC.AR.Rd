@@ -9,7 +9,7 @@ This function computes Bayes factors for the trend and intercept differences bet
 using monte carlo integration.
 }
 \usage{
-trendtest.MC.AR(before, after, iterations = 10000, r.scaleInt = 1, r.scaleSlp = 1, alphaTheta = 1, betaTheta = 5)
+trendtest.MC.AR(before, after, iterations = 1000, r.scaleInt = 1, r.scaleSlp = 1, alphaTheta = 1, betaTheta = 5, progress = TRUE)
 }
 \arguments{
   \item{before}{
@@ -32,6 +32,9 @@ The alpha parameter of the beta prior on theta (see Details below).
 }
  \item{betaTheta}{
 The beta parameter of the beta prior on theta (see Details below).
+}
+ \item{progress}{
+Report progress with a text progress bar?
 }
 }
 \details{

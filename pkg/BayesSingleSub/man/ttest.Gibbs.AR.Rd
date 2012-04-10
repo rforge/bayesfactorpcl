@@ -9,8 +9,8 @@ This function computes a Bayes factor for the mean difference between two phases
 using Gibbs sampling. Posterior samples of parameters are also provided.
 }
 \usage{
-ttest.Gibbs.AR(before, after, iterations = 10000, return.chains = FALSE, r.scale = 1, alphaTheta = 1, betaTheta = 5, 
-		progress = TRUE, sdMet = 0.3, areaNull = c(-0.2, 0.2))
+ttest.Gibbs.AR(before, after, iterations = 1000, areaNull = c(-0.2, 0.2), treat = NULL, r.scale = 1, alphaTheta = 1, 
+		betaTheta = 5, sdMet = 0.3, progress = TRUE, return.chains = FALSE)
 }
 \arguments{
   \item{before}{
@@ -22,10 +22,13 @@ A vector of observations, in time order, taken in Phase 2 (e.g., after the treat
   \item{iterations}{
 Number of Gibbs sampler iterations to perform.
 }
-\item{return.chains}{
-Return posterior samples of parameters?.
+\item{areaNull}{
+Only used if \code{return.chains=TRUE}. Bounds for the interval null hypothesis for delta.
 }
-  \item{r.scale}{
+\item{treat}{
+Vector of dummy coding, indicating Phase 1 and Phase 2; default is -.5 for Phase 1 and .5 for Phase 2.
+}
+ \item{r.scale}{
 Prior scale for delta (see Details below).
 }
 \item{alphaTheta}{
@@ -34,14 +37,14 @@ The alpha parameter of the beta prior on theta (see Details below).
  \item{betaTheta}{
 The beta parameter of the beta prior on theta (see Details below).
 }
-  \item{progress}{
-Report progress with a text progress bar?
-}
  \item{sdMet}{
 Scale for the Metropolis-Hastings sampling of theta (see Details below).
 }
-\item{areaNull}{
-Only used if \code{return.chains=TRUE}. Bounds for the interval null hypothesis for delta.
+ \item{progress}{
+Report progress with a text progress bar?
+}
+\item{return.chains}{
+Return posterior samples of parameters?.
 }
 }
 \details{

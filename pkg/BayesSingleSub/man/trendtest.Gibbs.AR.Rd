@@ -9,8 +9,8 @@ This function computes Bayes factors for the trend and intercept differences bet
 using Gibbs sampling. Posterior samples of parameters are also provided.
 }
 \usage{
-trendtest.Gibbs.AR(before, after, iterations = 10000, return.chains = FALSE, r.scaleInt = 1, r.scaleSlp = 1, alphaTheta = 1, 
-		   betaTheta = 5, progress = TRUE, sdMet = 0.3, intArea = c(-0.2,0.2), slpArea = c(-0.2, 0.2))
+trendtest.Gibbs.AR(before, after, iterations = 1000, intArea = c(-0.2,0.2), slpArea = c(-0.2, 0.2),  r.scaleInt = 1, r.scaleSlp = 1, 
+			alphaTheta = 1, betaTheta = 5, sdMet = 0.3, progress = TRUE, return.chains = FALSE)
 }
 \arguments{
   \item{before}{
@@ -22,10 +22,13 @@ A vector of observations, in time order, taken in Phase 2 (e.g., after the treat
   \item{iterations}{
 Number of Gibbs sampler iterations to perform.
 }
-\item{return.chains}{
-Return posterior samples of parameters?.
+\item{intArea}{
+Only used if \code{return.chains=TRUE}. Bounds for the interval null hypothesis for the intercept difference.
 }
-  \item{r.scaleInt}{
+\item{slpArea}{
+Only used if \code{return.chains=TRUE}. Bounds for the interval null hypothesis for the trend difference.
+}
+ \item{r.scaleInt}{
 Prior scale for the intercept difference (see Details below).
 }
 \item{r.scaleSlp}{
@@ -37,17 +40,14 @@ The alpha parameter of the beta prior on theta (see Details below).
  \item{betaTheta}{
 The beta parameter of the beta prior on theta (see Details below).
 }
-  \item{progress}{
-Report progress with a text progress bar?
-}
- \item{sdMet}{
+\item{sdMet}{
 Scale for the Metropolis-Hastings sampling of theta (see Details below).
 }
-\item{intArea}{
-Only used if \code{return.chains=TRUE}. Bounds for the interval null hypothesis for the intercept difference.
+ \item{progress}{
+Report progress with a text progress bar?
 }
-\item{slpArea}{
-Only used if \code{return.chains=TRUE}. Bounds for the interval null hypothesis for the trend difference.
+ \item{return.chains}{
+Return posterior samples of parameters?.
 }
 }
 \details{
