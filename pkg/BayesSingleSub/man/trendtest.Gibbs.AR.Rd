@@ -56,8 +56,8 @@ This function computes Bayes factors for the differences in trend and intercept 
 alternative hypothesis of a true trend difference. The Bayes factor for intercept difference compares the null hypothesis of no 
 true intercept difference against the alternative hypothesis of a true intercept difference. Also, a joined Bayes factor for the 
 trend and intercept combined is provided. Bayes factors larger than 1 support the null hypothesis, Bayes factors smaller than 1 support
- the alternative hypothesis. Auto-correlation of the errors is modeled by a first order auto-regressive process. Posterior distributions 
-of the model parameters can also be obtained.
+ the alternative hypothesis. Auto-correlation of the errors is modeled by a first order auto-regressive process. Posterior 
+distributions of the model parameters can also be obtained.
 
 Cauchy priors are placed on the standardized trend and intercept differences. The \code{r.scaleInt} and \code{r.scaleSlp} arguments 
 control the scales of these Cauchy priors, with \code{r.scaleInt = 1} and \code{r.scaleSlp = 1} yielding standard Cauchy priors. 
@@ -96,10 +96,10 @@ data = c(87.5, 82.5, 53.4, 72.3, 94.2, 96.6, 57.4, 78.1, 47.2,
  67, 40.5, 1.6, 38.6, 3.2, 24.1)
 
 ## Obtain log Bayes factors
-logBFs = ttest.Gibbs.AR(data[1:10], data[11:25])
+logBFs = trendtest.Gibbs.AR(data[1:10], data[11:25])
 
 ## Obtain log Bayes factors, chains, and log interval null Bayes factors
-output = ttest.Gibbs.AR(data[1:10], data[11:25], return.chains = TRUE, intArea = c(-0.2,0.2), slpArea = c(-0.2, 0.2))
+output = trendtest.Gibbs.AR(data[1:10], data[11:25], return.chains = TRUE, intArea = c(-0.2,0.2), slpArea = c(-0.2, 0.2))
 
 ## Look at the posterior distribution of the mean
 plot(output$chains[,1])
