@@ -67,10 +67,6 @@ A list containing the following:
 \item{acc}{Only returned if \code{return.chains=TRUE}. The Metropolis-Hastings acceptance rate.}
 \item{logbfArea}{Only returned if \code{return.chains=TRUE}. An MCMC estimate of the log interval null Bayes factor.}
 \references{
-Morey, R. D., Rouder, J. N., Pratte, M. S., \& Speckman, P. L. (2011). Conditional Marginal Density 
-Estimation to Improve Bayes Factor Computation.
-
-Perception and Cognition Lab (University of Missouri): Bayes factor calculators. \url{http://pcl.missouri.edu/bayesfactor}
 }
 \author{
 Richard D. Morey and Rivka de Vries

@@ -54,7 +54,6 @@ placed on the auto-correlation theta. The \code{alphaTheta} and \code{betaTheta}
 \item{logbf}{Monte carlo estimates of the log Bayes factors.}
 }
 \references{
-Perception and Cognition Lab (University of Missouri): Bayes factor calculators. \url{http://pcl.missouri.edu/bayesfactor}
 }
 \author{
 Richard D. Morey and Rivka de Vries

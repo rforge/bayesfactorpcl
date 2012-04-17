@@ -53,7 +53,6 @@ placed on the variance of the random shocks of the auto-regressive process. A be
 \item{logbf}{A monte carlo or Gaussian quadrature estimate of the log Bayes factor.}
 }
 \references{
-Perception and Cognition Lab (University of Missouri): Bayes factor calculators. \url{http://pcl.missouri.edu/bayesfactor}
 }
 \author{
 Richard D. Morey and Rivka de Vries
