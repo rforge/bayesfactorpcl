@@ -33,16 +33,11 @@ Richard D. Morey and Rivka de Vries
 Maintainer: Richard D. Morey <richarddmorey@gmail.com>
 }
 \references{
-De Vries, R. M. \& Morey, R. D. (2012). Statistical analysis of single-subject
-data: A Bayesian model. Psychological Methods, ????.
+De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
 
 Perception and Cognition Lab (University of Missouri): Bayes factor calculators. \url{http://pcl.missouri.edu/bayesfactor}
 }
 \keyword{htest}
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
 \examples{
 ## See specific functions for examples
 }

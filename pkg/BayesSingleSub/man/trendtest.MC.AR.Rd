@@ -6,7 +6,7 @@ Obtain Bayesian trend test or single case data
 }
 \description{
 This function computes Bayes factors for the trend and intercept differences between two phases of a single subject data sequence, 
-using monte carlo integration.
+using Monte Carlo integration.
 }
 \usage{
 trendtest.MC.AR(before, after, iterations = 1000, r.scaleInt = 1, r.scaleSlp = 1, alphaTheta = 1, betaTheta = 5, progress = TRUE)
@@ -54,6 +54,7 @@ placed on the auto-correlation theta. The \code{alphaTheta} and \code{betaTheta}
 \item{logbf}{Monte carlo estimates of the log Bayes factors.}
 }
 \references{
+De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
 }
 \author{
 Richard D. Morey and Rivka de Vries

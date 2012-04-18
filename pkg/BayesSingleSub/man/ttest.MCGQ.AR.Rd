@@ -6,7 +6,7 @@ Obtain Bayesian t test for single case data
 }
 \description{
 This function computes a Bayes factor for the mean difference between two phases of a single subject data sequence, 
-using monte carlo integration or Gaussian quadrature.
+using Monte Carlo integration or Gaussian quadrature.
 }
 \usage{
 ttest.MCGQ.AR(before, after, iterations = 1000, treat = NULL, method = "MC", r.scale = 1, alphaTheta = 1, betaTheta = 5)
@@ -53,6 +53,7 @@ placed on the variance of the random shocks of the auto-regressive process. A be
 \item{logbf}{A monte carlo or Gaussian quadrature estimate of the log Bayes factor.}
 }
 \references{
+De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
 }
 \author{
 Richard D. Morey and Rivka de Vries

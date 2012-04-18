@@ -72,6 +72,7 @@ A list containing the following:
 \item{logbfArea}{Only returned if \code{return.chains=TRUE}. MCMC estimates of the log interval null Bayes factors.}
 }
 \references{
+De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
 }
 \author{
 Richard D. Morey and Rivka de Vries

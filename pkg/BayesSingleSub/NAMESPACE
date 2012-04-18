@@ -1,4 +1,4 @@
 useDynLib(BayesSingleSub)
 
 export(ttest.Gibbs.AR,ttest.MCGQ.AR,trendtest.Gibbs.AR,trendtest.MC.AR)
-#import(BayesFactorPCL)
+import(coda,mvtnorm,MCMCpack)

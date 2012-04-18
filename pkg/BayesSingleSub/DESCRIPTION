@@ -6,7 +6,7 @@ Date: 2012-3-28
 Author: Richard D. Morey, Rivka de Vries
 Maintainer: Richard D. Morey <richarddmorey@gmail.com>
 Description: The BayesSingleSub package is a suite of functions for computing various Bayes factors for interrupted time-series, based on the models described in de Vries and Morey (submitted).
-License: GPL 2
-Depends:  coda, mvtnorm
+License: GPL-2
+Imports: coda, mvtnorm, MCMCpack
 LazyLoad: yes
 
