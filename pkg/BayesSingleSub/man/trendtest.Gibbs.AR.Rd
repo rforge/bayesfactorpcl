@@ -67,10 +67,10 @@ placed on the auto-correlation theta. The \code{alphaTheta} and \code{betaTheta}
 \value{
 A list containing the following:
 \item{logbf}{MCMC estimates of the log Bayes factors, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted).}
-}
 \item{chains}{Only returned if \code{return.chains=TRUE}. An object of type MCMC containing the chains for each parameter.}
 \item{acc}{Only returned if \code{return.chains=TRUE}. The Metropolis-Hastings acceptance rate.}
 \item{logbfArea}{Only returned if \code{return.chains=TRUE}. MCMC estimates of the log interval null Bayes factors.}
+}
 \references{
 }
 \author{

@@ -74,6 +74,7 @@ data = c(87.5, 82.5, 53.4, 72.3, 94.2, 96.6, 57.4, 78.1, 47.2,
 
 ## Obtain log Bayes factor
 logBF = ttest.MCGQ.AR(data[1:10], data[11:25])
+}
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

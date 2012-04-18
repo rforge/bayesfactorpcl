@@ -62,10 +62,10 @@ placed on the variance of the random shocks of the auto-regressive process. A be
 \value{
 A list containing the following:
 \item{logbf}{An MCMC estimate of the log Bayes factor, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted).}
-}
 \item{chains}{Only returned if \code{return.chains=TRUE}. An object of type MCMC containing the chains for each parameter.}
 \item{acc}{Only returned if \code{return.chains=TRUE}. The Metropolis-Hastings acceptance rate.}
 \item{logbfArea}{Only returned if \code{return.chains=TRUE}. An MCMC estimate of the log interval null Bayes factor.}
+}
 \references{
 }
 \author{
