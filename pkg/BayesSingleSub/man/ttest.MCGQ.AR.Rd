@@ -53,7 +53,14 @@ placed on the variance of the random shocks of the auto-regressive process. A be
 \item{logbf}{A monte carlo or Gaussian quadrature estimate of the log Bayes factor.}
 }
 \references{
+<<<<<<< .mine
+De Vries, R. M. \& Morey, R. D. (2012). Statistical analysis of single-subject
+data: A Bayesian model. Psychological Methods, ????.
+
+Code guide for the R functions: \url{http://drsmorey.org/research/rdmorey/}
+=======
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
+>>>>>>> .r120
 }
 \author{
 Richard D. Morey and Rivka de Vries

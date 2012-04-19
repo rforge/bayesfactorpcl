@@ -54,7 +54,14 @@ placed on the auto-correlation theta. The \code{alphaTheta} and \code{betaTheta}
 \item{logbf}{Monte carlo estimates of the log Bayes factors.}
 }
 \references{
+<<<<<<< .mine
+De Vries, R. M. \& Morey, R. D. (2012). Statistical analysis of single-subject
+data: A Bayesian model. Psychological Methods, ????.
+
+Code guide for the R functions: \url{http://drsmorey.org/research/rdmorey/}
+=======
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
+>>>>>>> .r120
 }
 \author{
 Richard D. Morey and Rivka de Vries

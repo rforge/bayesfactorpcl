@@ -35,7 +35,7 @@ Maintainer: Richard D. Morey <richarddmorey@gmail.com>
 \references{
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
 
-Perception and Cognition Lab (University of Missouri): Bayes factor calculators. \url{http://pcl.missouri.edu/bayesfactor}
+Code guide for the R functions: \url{http://drsmorey.org/research/rdmorey/}
 }
 \keyword{htest}
 \examples{
