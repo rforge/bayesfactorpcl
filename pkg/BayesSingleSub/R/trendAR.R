@@ -49,9 +49,9 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 	
 	if(return.chains)
 	{
-		return(list(logbf=matrix(logbf, nrow=1, dimnames=list(c(""),c("logbf.joint","logbf.trend","logbf.int"))), chains=mcmc(out[[1]]), acc=acc, logbfArea=matrix(areas - nullAreas, nrow=1, dimnames=list(c(""),c("logbf.int","logbf.trend")))))
+		return(list(logbf=matrix(logbf, nrow=1, dimnames=list(c(""),c("logbf.i+t","logbf.trend","logbf.int"))), chains=mcmc(out[[1]]), acc=acc, logbfArea=matrix(areas - nullAreas, nrow=1, dimnames=list(c(""),c("logbf.int","logbf.trend")))))
 	}else{
-		return(logbf=matrix(logbf, nrow=1, dimnames=list(c(""),c("logbf.joint","logbf.trend","logbf.int"))))
+		return(logbf=matrix(logbf, nrow=1, dimnames=list(c(""),c("logbf.i+t","logbf.trend","logbf.int"))))
 	}
 }
 
