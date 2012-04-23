@@ -56,8 +56,11 @@ This function computes Bayes factors for the differences in trend and intercept 
 alternative hypothesis of a true trend difference. The Bayes factor for intercept difference compares the null hypothesis of no 
 true intercept difference against the alternative hypothesis of a true intercept difference. Also, a joined Bayes factor for the 
 trend and intercept combined is provided. Bayes factors larger than 1 support the null hypothesis, Bayes factors smaller than 1 support
- the alternative hypothesis. Auto-correlation of the errors is modeled by a first order auto-regressive process. Posterior 
-distributions of the model parameters can also be obtained.
+ the alternative hypothesis. Auto-correlation of the errors is modeled by a first order auto-regressive process.
+
+Posterior distributions of the model parameters can also be obtained. Model parameters of interest include mu0 (overall mean), 
+sig*delta (difference between intercepts), beta0 (overall trend), sig*beta1 (difference between trends), sig2 (variance of the random 
+shocks), and rho (auto-correlation).
 
 Cauchy priors are placed on the standardized trend and intercept differences. The \code{r.scaleInt} and \code{r.scaleSlp} arguments 
 control the scales of these Cauchy priors, with \code{r.scaleInt = 1} and \code{r.scaleSlp = 1} yielding standard Cauchy priors. 
@@ -72,14 +75,9 @@ A list containing the following:
 \item{logbfArea}{Only returned if \code{return.chains=TRUE}. MCMC estimates of the log interval null Bayes factors.}
 }
 \references{
-<<<<<<< .mine
-De Vries, R. M. \& Morey, R. D. (2012). Statistical analysis of single-subject
-data: A Bayesian model. Psychological Methods, ????.
-
-Code guide for the R functions: \url{http://drsmorey.org/research/rdmorey/}
-=======
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
->>>>>>> .r120
+
+R code guide: \url{http://drsmorey.org/research/rdmorey/}
 }
 \author{
 Richard D. Morey and Rivka de Vries

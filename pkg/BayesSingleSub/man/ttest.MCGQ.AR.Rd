@@ -50,17 +50,12 @@ placed on the variance of the random shocks of the auto-regressive process. A be
  theta. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
 }
 \value{
-\item{logbf}{A monte carlo or Gaussian quadrature estimate of the log Bayes factor.}
+A scalar giving the monte carlo or Gaussian quadrature estimate of the log Bayes factor.
 }
 \references{
-<<<<<<< .mine
-De Vries, R. M. \& Morey, R. D. (2012). Statistical analysis of single-subject
-data: A Bayesian model. Psychological Methods, ????.
-
-Code guide for the R functions: \url{http://drsmorey.org/research/rdmorey/}
-=======
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
->>>>>>> .r120
+
+R code guide: \url{http://drsmorey.org/research/rdmorey/}
 }
 \author{
 Richard D. Morey and Rivka de Vries

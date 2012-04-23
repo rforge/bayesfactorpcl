@@ -52,12 +52,15 @@ This function computes a Bayes factor for the mean difference between two data s
  using Gibbs sampling. The Bayes factor compares the null hypothesis of no true mean difference against the 
 alternative hypothesis of a true mean difference. A Bayes factor larger than 1 supports the null hypothesis,
  a Bayes factor smaller than 1 supports the alternative hypothesis. Auto-correlation of the errors is modeled by a first
- order auto-regressive process. Posterior distributions of the model parameters can also be obtained.
+ order auto-regressive process.
+
+Posterior distributions of the model parameters can also be obtained. Model parameters of interest include mu0 (overall mean), 
+delta (standardized mean difference), sig2 (variance of the random shocks), and rho (auto-correlation).
 
 A Cauchy prior is placed on the standardized mean difference delta. The \code{r.scale} argument controls the scale of
  this Cauchy prior, with \code{r.scale=1} yielding a standard Cauchy prior. A noninformative Jeffreys prior is 
 placed on the variance of the random shocks of the auto-regressive process. A beta prior is placed on the auto-correlation
- theta. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
+ rho. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
 }
 \value{
 A list containing the following:
@@ -67,14 +70,9 @@ A list containing the following:
 \item{logbfArea}{Only returned if \code{return.chains=TRUE}. An MCMC estimate of the log interval null Bayes factor.}
 }
 \references{
-<<<<<<< .mine
-De Vries, R. M. \& Morey, R. D. (2012). Statistical analysis of single-subject
-data: A Bayesian model. Psychological Methods, ????.
-
-Code guide for the R functions: \url{http://drsmorey.org/research/rdmorey/}
-=======
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
->>>>>>> .r120
+
+R code guide: \url{http://drsmorey.org/research/rdmorey/}
 }
 \author{
 Richard D. Morey and Rivka de Vries

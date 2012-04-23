@@ -22,7 +22,7 @@ LazyLoad: \tab yes\cr
 The following functions are currently implemented, with more to follow:
 
 ttest.Gibbs.AR(): Compute Bayes factor for mean difference using Gibbs sampling and obtain posterior samples of parameters
-ttest.MCGQ.AR(): Compute Bayes factor for mean difference using monte carlo integration
+ttest.MCGQ.AR(): Compute Bayes factor for mean difference using monte carlo or gaussian quadrature integration
 trendtest.Gibbs.AR(): Compute Bayes factors for trend and intercept differences using Gibbs sampling and obtain posterior samples of parameters
 trendtest.MC.AR(): Compute Bayes factors for trend and intercept differences using monte carlo integration
 
@@ -35,7 +35,7 @@ Maintainer: Richard D. Morey <richarddmorey@gmail.com>
 \references{
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
 
-Code guide for the R functions: \url{http://drsmorey.org/research/rdmorey/}
+R code guide: \url{http://drsmorey.org/research/rdmorey/}
 }
 \keyword{htest}
 \examples{

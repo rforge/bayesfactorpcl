@@ -32,7 +32,7 @@ ttest.Gibbs.AR = function(before,after,iterations=1000,areaNull=c(-.2,.2),treat=
 	
 	dim(chains) = c(iterations,7)
 	chains = data.frame(chains)
-	colnames(chains) = c("mu","beta","ldens","sig2","g","rho","nullArea")
+	colnames(chains) = c("mu0","beta","ldens","sig2","g","rho","nullArea")
 	chains$delta = chains$beta/sqrt(chains$sig2)
 	
 	logdens = logMeanExpLogs(chains$ldens)
@@ -46,9 +46,9 @@ ttest.Gibbs.AR = function(before,after,iterations=1000,areaNull=c(-.2,.2),treat=
 	
 	if(return.chains)
 	{
-		return(list(logbf.delta=logbf,chains=mcmc(chains[,c(1,8,4,5,6)]),acc=acc,logbfArea=logbfArea))
+		return(list(logbf=logbf,chains=mcmc(chains[,c(1,8,4,5,6)]),acc=acc,logbfArea=logbfArea))
 	}else{
-		return(c(logbf.delta=logbf))
+		return(list(logbf=logbf))
 	}
 }
 
