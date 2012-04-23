@@ -63,7 +63,8 @@ placed on the variance of the random shocks of the auto-regressive process. A be
  rho. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
 }
 \value{
-A list containing the following:
+if \code{return.chains=FALSE}: a scalar giving an MCMC estimate of the log Bayes factor, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted)
+if \code{return.chains=TRUE}: a list containing the following:
 \item{logbf}{An MCMC estimate of the log Bayes factor, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted).}
 \item{chains}{Only returned if \code{return.chains=TRUE}. An object of type MCMC containing the chains for each parameter.}
 \item{acc}{Only returned if \code{return.chains=TRUE}. The Metropolis-Hastings acceptance rate.}

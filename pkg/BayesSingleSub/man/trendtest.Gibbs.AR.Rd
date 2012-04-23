@@ -68,11 +68,12 @@ A noninformative Jeffreys prior is placed on the variance of the random shocks o
 placed on the auto-correlation theta. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
 }
 \value{
-A list containing the following:
+if \code{return.chains=FALSE}: a matrix containing MCMC estimates of the log Bayes factors, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted)
+if \code{return.chains=TRUE}: a list containing the following:
 \item{logbf}{MCMC estimates of the log Bayes factors, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted).}
-\item{chains}{Only returned if \code{return.chains=TRUE}. An object of type MCMC containing the chains for each parameter.}
-\item{acc}{Only returned if \code{return.chains=TRUE}. The Metropolis-Hastings acceptance rate.}
-\item{logbfArea}{Only returned if \code{return.chains=TRUE}. MCMC estimates of the log interval null Bayes factors.}
+\item{chains}{An object of type MCMC containing the chains for each parameter.}
+\item{acc}{The Metropolis-Hastings acceptance rate.}
+\item{logbfArea}{MCMC estimates of the log interval null Bayes factors.}
 }
 \references{
 De Vries, R. M. \& Morey, R. D. (submitted). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
