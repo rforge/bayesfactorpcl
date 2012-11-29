@@ -40,10 +40,12 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 	logbf = ldens - nulllogdens
 		
 	areas = log(out[[2]][4:5]) - log(iterations)#log(colMeans(chains[,12:13]))
-	nullAreas = log(c(
+	areas = areas - log(1 - exp(areas))
+  nullAreas = log(c(
 				diff(pcauchy(intArea,scale=r.scaleInt)),
 				diff(pcauchy(slpArea,scale=r.scaleSlp))
 				))
+  nullAreas = nullAreas - log(1 - exp(nullAreas))
 	acc = mean(diff(out[[1]]$rho)!=0)
 	cat("\n","rho acceptance rate:",acc,"\n")
 	

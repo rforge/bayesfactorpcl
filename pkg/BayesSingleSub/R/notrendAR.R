@@ -39,7 +39,8 @@ ttest.Gibbs.AR = function(before,after,iterations=1000,areaNull=c(-.2,.2),treat=
 	nulllogdens = dcauchy(0,log=TRUE) - log(r.scale)
 	logbf = logdens - nulllogdens
 	
-	logbfArea = log(mean(chains$nullArea)) - log(diff(pcauchy(areaNull,scale=r.scale)))
+	logbfArea = log(mean(chains$nullArea)) - log(1-mean(chains$nullArea)) - 
+              (log(diff(pcauchy(areaNull,scale=r.scale))) - log(1 - diff(pcauchy(areaNull,scale=r.scale))))
 	
 	acc = mean(diff(chains$rho)!=0)
 	cat("\n","rho acceptance rate:",acc,"\n")

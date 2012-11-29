@@ -1,8 +1,8 @@
 Package: BayesSingleSub
 Type: Package
 Title: Computation of Bayes factors for interrupted time-series designs 
-Version: 0.6
-Date: 2012-3-28
+Version: 0.6.1
+Date: 2012-11-28
 Author: Richard D. Morey, Rivka de Vries
 Maintainer: Richard D. Morey <richarddmorey@gmail.com>
 Description: The BayesSingleSub package is a suite of functions for computing various Bayes factors for interrupted time-series, based on the models described in de Vries and Morey (submitted).
