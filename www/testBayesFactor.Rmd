@@ -6,6 +6,7 @@ This R markdown file runs a series of tests to ensure that the BayesFactor packa
 library(BayesFactor)
 library(MASS)
 library(doMC)
+library(arm)
 
 print(st <- as.integer(Sys.time()))
 set.seed(st)
@@ -61,28 +62,91 @@ for(i in 1:3){
 
 ### Bayes factor
 
+Test multicore
 ```{r}
-bfs <- allNways(y = effects$y,
+t.mc = system.time(bfs.mc <- allNways(y = effects$y,
               dataFixed = effects[c("A","B","C")],
               dataRandom = effects["ID"], 
               whichModels = "withmain",
-              multicore=TRUE,extraInfo=FALSE)
+              multicore=TRUE,extraInfo=FALSE,progress=FALSE))
+t.sc = system.time(bfs <- allNways(y = effects$y,
+              dataFixed = effects[c("A","B","C")],
+              dataRandom = effects["ID"], 
+              whichModels = "withmain",
+              multicore=FALSE,extraInfo=FALSE,progress=FALSE))
 ```
 
 ```{r}
-bfs
+t.sc
+t.mc
+                   
+plot(log(bfs.mc),log(bfs))
+abline(0,1)
+bfs.mc
 ```
 
 ### Gibbs sampler
 ```{r message=FALSE}
-chains <- nWayAOV.Gibbs(y = effects$y,
+chains <- nWayAOV.Gibbs(y = effects$y,modelFormula = ~ A + B + C + ID ,
               dataFixed = effects[c("A","B","C")],
-              dataRandom = effects["ID"], progress=FALSE)
+              dataRandom = effects[c("ID")], progress=FALSE)
 
-summary(chains)
+lmerObj <- lmer(y ~ A + B + C + (1|ID), data=effects)
+chainsLmer = sim(lmerObj,n.sims=10000)
+```
+
+Compare estimates of variance
+```{r}
+BF.sig2 <- chains[,colnames(chains)=="sig2"]
+AG.sig2 <- (chainsLmer@sigma)^2
+qqplot(log(BF.sig2),log(AG.sig2))
+abline(0,1)
+```
+
+Compare estimates of participant effects
+```{r}
+AG.raneff <- chainsLmer@ranef$ID[,,1]
+BF.raneff <-  chains[,grep('ID',colnames(chains),fixed='TRUE')]
+plot(colMeans(BF.raneff),colMeans(AG.raneff))
+abline(0,1)
+
+```
+Compare estimates of participant effects
+```{r}
+AG.raneff <- chainsLmer@ranef$ID[,,1]
+BF.raneff <-  chains[,grep('ID',colnames(chains),fixed='TRUE')]
+plot(colMeans(BF.raneff),colMeans(AG.raneff))
+abline(0,1)
 
 ```
 
+Compare estimates of fixed effects
+```{r}
+AG.fixeff <- chainsLmer@fixef
+BF.fixeff <-  chains[,1:10]
 
+## Deviation is due to the cornerstone parameterization
+qqplot(BF.fixeff[,1],AG.fixeff[,1])
+abline(0,1)
+
+
+
+AG1 <- colMeans(AG.fixeff) 
+BF1 <- colMeans(BF.fixeff)
+
+# Adjust AG results from cornerstone to sum to 0
+# should use a matrix to do this, but...
+AG1 <- c(AG1[1],0,AG1[2:3],0,AG1[4:5],0,AG1[6:7])
+AG1[1] <- AG1[1] + mean(AG1[2:4])
+AG1[2:4] <- AG1[2:4] - mean(AG1[2:4])
+AG1[1] <- AG1[1] + mean(AG1[5:7])
+AG1[5:7] <- AG1[5:7] - mean(AG1[5:7])
+AG1[1] <- AG1[1] + mean(AG1[8:10])
+AG1[8:10] <- AG1[8:10] - mean(AG1[8:10])
+
+plot(BF1[-1],AG1[-1])
+abline(0,1)
+
+```
 
 
