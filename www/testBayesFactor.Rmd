@@ -17,7 +17,7 @@ ANOVA
 First we generate some data.
 ```{r}
 # Number of participants
-N <- 10
+N <- 20
 sig2 <- 1
 sig2ID <- 1
 
@@ -45,18 +45,6 @@ effects$y = rnorm(Xdata%*%beta,Xdata%*%beta,sqrt(sig2))
 summary(fullaov <- aov(y ~ A*B*C + Error(ID),data=effects))
 ```
 
-```{r}
-bfs <- allNways(y = effects$y,
-              dataFixed = effects[c("A","B","C")],
-              dataRandom = effects["ID"], 
-              whichModels = "withmain",
-              multicore=TRUE,extraInfo=TRUE)
-```
-
-```{r}
-bfs
-```
-
 ```{r fig.width=10,fig.height=4}
 mns <- tapply(effects$y,list(effects$A,effects$B,effects$C),mean)
 stderr = sqrt((sum(resid(fullaov[[3]])^2)/fullaov[[3]]$df.resid)/N)
@@ -69,5 +57,32 @@ for(i in 1:3){
   segments(1:3 + mns[,,i]*0,mns[,,i] + stderr,1:3 + mns[,,i]*0,mns[,,i] - stderr,col=rgb(0,0,0,.3))
 }
 ```
+
+
+### Bayes factor
+
+```{r}
+bfs <- allNways(y = effects$y,
+              dataFixed = effects[c("A","B","C")],
+              dataRandom = effects["ID"], 
+              whichModels = "withmain",
+              multicore=TRUE,extraInfo=FALSE)
+```
+
+```{r}
+bfs
+```
+
+### Gibbs sampler
+```{r message=FALSE}
+chains <- nWayAOV.Gibbs(y = effects$y,
+              dataFixed = effects[c("A","B","C")],
+              dataRandom = effects["ID"], progress=FALSE)
+
+summary(chains)
+
+```
+
+
 
 
