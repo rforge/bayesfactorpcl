@@ -1,0 +1,14 @@
+Package: BayesFactor.gui
+Type: Package
+Title: GUI(s) for the BayesFactor package
+Version: 0.1
+Date: 2012-12-15
+Author: Richard D. Morey
+Maintainer: Richard D. Morey <richarddmorey@gmail.com>
+Description: The BayesFactor package is a suite of functions for computing various Bayes factors for simple designs. This package extends BayesFactor by adding graphical user interfaces to its functions
+License: GPL-2
+Depends: BayesFactor
+Imports: BayesFactor, reshape, Rook, RJSONIO, Rserve
+Suggests: testthat
+LazyLoad: yes
+
