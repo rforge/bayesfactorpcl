@@ -111,41 +111,41 @@ plot(colMeans(BF.raneff),colMeans(AG.raneff))
 abline(0,1)
 
 ```
-Compare estimates of participant effects
-```{r}
-AG.raneff <- chainsLmer@ranef$ID[,,1]
-BF.raneff <-  chains[,grep('ID',colnames(chains),fixed='TRUE')]
-plot(colMeans(BF.raneff),colMeans(AG.raneff))
-abline(0,1)
-
-```
 
 Compare estimates of fixed effects
-```{r}
+```{r tidy=FALSE}
 AG.fixeff <- chainsLmer@fixef
 BF.fixeff <-  chains[,1:10]
 
-## Deviation is due to the cornerstone parameterization
-qqplot(BF.fixeff[,1],AG.fixeff[,1])
-abline(0,1)
-
-
-
-AG1 <- colMeans(AG.fixeff) 
-BF1 <- colMeans(BF.fixeff)
-
 # Adjust AG results from cornerstone to sum to 0
-# should use a matrix to do this, but...
-AG1 <- c(AG1[1],0,AG1[2:3],0,AG1[4:5],0,AG1[6:7])
-AG1[1] <- AG1[1] + mean(AG1[2:4])
-AG1[2:4] <- AG1[2:4] - mean(AG1[2:4])
-AG1[1] <- AG1[1] + mean(AG1[5:7])
-AG1[5:7] <- AG1[5:7] - mean(AG1[5:7])
-AG1[1] <- AG1[1] + mean(AG1[8:10])
-AG1[8:10] <- AG1[8:10] - mean(AG1[8:10])
+Z = c(1,  1/3,  1/3,  1/3,  1/3,  1/3,  1/3,
+      0, -1/3, -1/3,    0,    0,    0,    0,
+      0,  2/3, -1/3,    0,    0,    0,    0,
+      0, -1/3,  2/3,    0,    0,    0,    0,
+      0,     0,   0, -1/3, -1/3,    0,    0,
+      0,     0,   0,  2/3, -1/3,    0,    0,
+      0,     0,   0, -1/3,  2/3,    0,    0,
+      0,     0,   0,    0,    0, -1/3, -1/3,
+      0,     0,   0,    0,    0,  2/3, -1/3,
+      0,     0,   0,    0,    0, -1/3,  2/3)
+dim(Z) = c(7,10)
+Z = t(Z)
 
-plot(BF1[-1],AG1[-1])
+AG.fixeff2 = t(Z%*%t(AG.fixeff))
+
+## Our grand mean has heavier tails
+qqplot(BF.fixeff[,1],AG.fixeff2[,1])
 abline(0,1)
+
+plot(colMeans(BF.fixeff[,-1]),colMeans(AG.fixeff2[,-1]))
+abline(0,1)
+
+## Compare posterior standard deviations
+BFsd = apply(BF.fixeff[,-1],2,sd)
+AGsd = apply(AG.fixeff2[,-1],2,sd)
+plot(sort(AGsd/BFsd))
+## AG estimates are slightly larger, consistent with sig2 estimates
+## probabily due to prior
 
 ```
 
