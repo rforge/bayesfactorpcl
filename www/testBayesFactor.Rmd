@@ -43,7 +43,7 @@ effects$y = rnorm(Xdata%*%beta,Xdata%*%beta,sqrt(sig2))
 ```
 
 ```{r}
-summary(fullaov <- aov(y ~ A*B*C + Error(ID),data=effects))
+summary(fullaov <- aov(y ~ A*B*C + Error(ID/(A*B*C)),data=effects))
 ```
 
 ```{r fig.width=10,fig.height=4}
