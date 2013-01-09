@@ -1,0 +1,80 @@
+<?php
+
+$domain=ereg_replace('[^\.]*\.(.*)$','\1',$_SERVER['HTTP_HOST']);
+$group_name=ereg_replace('([^\.]*)\..*$','\1',$_SERVER['HTTP_HOST']);
+$themeroot='http://r-forge.r-project.org/themes/rforge/';
+
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en   ">
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title><?php echo $group_name; ?></title>
+	<link href="<?php echo $themeroot; ?>styles/estilo1.css" rel="stylesheet" type="text/css" />
+  </head>
+
+<body>
+
+<!-- R-Forge Logo -->
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
+<tr><td>
+<a href="/"><img src="<?php echo $themeroot; ?>/images/logo.png" border="0" alt="R-Forge Logo" /> </a> </td> </tr>
+</table>
+
+
+<!-- get project title  -->
+<!-- own website starts here, the following may be changed as you like -->
+
+<?php if ($handle=fopen('http://'.$domain.'/export/projtitl.php?group_name='.$group_name,'r')){
+$contents = '';
+while (!feof($handle)) {
+	$contents .= fread($handle, 8192);
+}
+fclose($handle);
+echo $contents; } ?>
+
+<!-- end of project description -->
+<h3> Welcome to the development page for BayesFactor.</h3>
+
+<p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
+
+<!--begin.rcode echo=FALSE,results='hide',message=FALSE
+library(BayesFactor)
+end.rcode-->
+
+
+Here we demonstrate a repeated-measures ANOVA-like analysis, using the Bayes factors described in <a href="http://pcl.missouri.edu/node/131">Rouder et al. (2012)</a>. We give a model including the fixed effects we'd like to include (<code>shape</code> and <code>color</code>), and add the effect of participant (<code>ID</code>). We indicate that <code>ID</code> is a random factor with the <code>whichRandom</code> argument. (we turn the progress bars off with <code>progress=FALSE</code> only so they don't show up on the webpage. We recommend leaving them on.)
+<!--begin.rcode
+data(puzzles)
+bfs = anovaBF(RT ~ shape * color + ID, data = puzzles, whichRandom = "ID", progress = FALSE)
+bfs
+end.rcode-->
+The model including only the main effects, and no interaction, is preferred by a Bayes factor of about 12 to 1 (with a proportional error in estimation of 1-2%). We can compare the main effect model directly to the main effect plus interaction model, by dividing the two Bayes factors:
+
+<!--begin.rcode
+bfs[3] / bfs [4]
+end.rcode-->
+The main effects model is preferred over the model with the interaction by a factor of about 2.6 to 1.
+
+We can also sample from the posterior distribution of the model conditioned on the data using the <code>posterior()</code> function:
+<!--begin.rcode
+samples = posterior(bfs[4], iterations = 10000)
+end.rcode-->
+This samples from the posterior of the fourth numerator model in <code>bfs</code>, which is the model with interaction. <code>samples</samples> now contains the Gibbs sampler output:
+<!--begin.rcode
+summary(samples[,c(1:5,18:21)]) 
+end.rcode-->
+We can plot the posterior distribution of the difference between the two shape main effect factor levels:
+<!--begin.rcode fig.width=10
+plot(samples[,'shape-round'] - samples[,'shape-square'])
+end.rcode-->
+The effect is about 1.
+
+</body>
+</html>
+
+
