@@ -40,19 +40,31 @@ echo $contents; } ?>
 <!-- end of project description -->
 <h3> Welcome to the development page for BayesFactor.</h3>
 
-<p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
+<p> The <strong>project summary page</strong> can be found <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
+
+<p> If you need help using the package or have questions, the <strong>BayesFactor help forum</strong> can be found <a href="https://r-forge.r-project.org/forum/?group_id=554"><strong>here</strong></a>; or, you can email the project maintainer, Richard Morey, at <code>richarddmorey at gmail dot com</code>.</p>
+
+<hr>
 
 <!--begin.rcode echo=FALSE,results='hide',message=FALSE
 library(BayesFactor)
 end.rcode-->
 
 
-<p>Here we demonstrate a repeated-measures ANOVA-like analysis, using the Bayes factors described in <a href="http://pcl.missouri.edu/node/131">Rouder et al. (2012)</a>. We give a model including the fixed effects we'd like to include (<code>shape</code> and <code>color</code>), and add the effect of participant (<code>ID</code>). We indicate that <code>ID</code> is a random factor with the <code>whichRandom</code> argument. (we turn the progress bars off with <code>progress=FALSE</code> only so they don't show up on the webpage. We recommend leaving them on.)
-<!--begin.rcode
+<p>Here we demonstrate a repeated-measures ANOVA-like analysis, using the Bayes factors described in <a href="http://pcl.missouri.edu/node/131">Rouder et al. (2012)</a>. We give a model including the fixed effects we'd like to include (<code>shape</code> and <code>color</code>), and add the effect of participant (<code>ID</code>). We indicate that <code>ID</code> is a random factor with the <code>whichRandom</code> argument.
+<!--begin.rcode eval=FALSE
+data(puzzles)
+bfs = anovaBF(RT ~ shape * color + ID, data = puzzles, whichRandom = "ID")
+bfs
+end.rcode-->
+
+<!--begin.rcode echo=FALSE
 data(puzzles)
 bfs = anovaBF(RT ~ shape * color + ID, data = puzzles, whichRandom = "ID", progress = FALSE)
 bfs
 end.rcode-->
+
+
 The model including only the main effects, and no interaction, is preferred by a Bayes factor of about 12 to 1 (with a proportional error in estimation of 1-2%). We can plot the Bayes factor object to obtain a graphical representation of the Bayes factors:
 <!--begin.rcode bfplot,fig.height=5,fig.width=10
 plot(bfs)
@@ -69,7 +81,7 @@ The main effects model is preferred over the model with the interaction by a fac
 <!--begin.rcode
 samples = posterior(bfs[4], iterations = 10000)
 end.rcode-->
-This samples from the posterior of the fourth numerator model in <code>bfs</code>, which is the model with interaction. <code>samples</samples> now contains the Gibbs sampler output:
+This samples from the posterior of the fourth numerator model in <code>bfs</code>, which is the model with interaction. <code>samples</code> now contains the Gibbs sampler output:
 <!--begin.rcode
 summary(samples[,c(1:5,18:21)]) 
 end.rcode-->

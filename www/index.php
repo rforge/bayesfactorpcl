@@ -137,27 +137,36 @@ echo $contents; } ?>
 <!-- end of project description -->
 <h3> Welcome to the development page for BayesFactor.</h3>
 
-<p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
+<p> The <strong>project summary page</strong> can be found <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
+
+<p> If you need help using the package or have questions, the <strong>BayesFactor help forum</strong> can be found <a href="https://r-forge.r-project.org/forum/?group_id=554"><strong>here</strong></a>; or, you can email the project maintainer, Richard Morey, at <code>richarddmorey at gmail dot com</code>.</p>
+
+<hr>
 
 
 
 
 
-<p>Here we demonstrate a repeated-measures ANOVA-like analysis, using the Bayes factors described in <a href="http://pcl.missouri.edu/node/131">Rouder et al. (2012)</a>. We give a model including the fixed effects we'd like to include (<code>shape</code> and <code>color</code>), and add the effect of participant (<code>ID</code>). We indicate that <code>ID</code> is a random factor with the <code>whichRandom</code> argument. (we turn the progress bars off with <code>progress=FALSE</code> only so they don't show up on the webpage. We recommend leaving them on.)
+<p>Here we demonstrate a repeated-measures ANOVA-like analysis, using the Bayes factors described in <a href="http://pcl.missouri.edu/node/131">Rouder et al. (2012)</a>. We give a model including the fixed effects we'd like to include (<code>shape</code> and <code>color</code>), and add the effect of participant (<code>ID</code>). We indicate that <code>ID</code> is a random factor with the <code>whichRandom</code> argument.
 <div class="chunk"><div class="rcode"><div class="source"><pre class="knitr r"><span class="functioncall">data</span>(puzzles)
-bfs = <span class="functioncall">anovaBF</span>(RT ~ shape * color + ID, data = puzzles, whichRandom = <span class="string">"ID"</span>, progress = <span class="keyword">FALSE</span>)
+bfs = <span class="functioncall">anovaBF</span>(RT ~ shape * color + ID, data = puzzles, whichRandom = <span class="string">"ID"</span>)
 bfs
-</pre></div><div class="output"><pre class="knitr r">## Bayes factor analysis
+</pre></div></div></div>
+
+
+<div class="chunk"><div class="rcode"><div class="output"><pre class="knitr r">## Bayes factor analysis
 ## --------------
-## [1] shape + ID                       : 2.918 (1.39%)
-## [2] color + ID                       : 2.844 (1.41%)
-## [3] shape + color + ID               : 11.58 (1.64%)
-## [4] shape + color + shape:color + ID : 4.46 (2%)
+## [1] shape + ID                       : 2.866 (1.41%)
+## [2] color + ID                       : 2.898 (1.39%)
+## [3] shape + color + ID               : 12.07 (1.64%)
+## [4] shape + color + shape:color + ID : 4.359 (2.01%)
 ## ---
 ##  Denominator:
 ## Type: BFlinearModel, JZS
 ## RT ~ ID
 </pre></div></div></div>
+
+
 
 The model including only the main effects, and no interaction, is preferred by a Bayes factor of about 12 to 1 (with a proportional error in estimation of 1-2%). We can plot the Bayes factor object to obtain a graphical representation of the Bayes factors:
 <div class="chunk"><div class="rcode"><div class="source"><pre class="knitr r"><span class="functioncall">plot</span>(bfs)
@@ -169,7 +178,7 @@ The model including only the main effects, and no interaction, is preferred by a
 <div class="chunk"><div class="rcode"><div class="source"><pre class="knitr r">bfs[3]/bfs[4]
 </pre></div><div class="output"><pre class="knitr r">## Bayes factor analysis
 ## --------------
-## [1] shape + color + ID : 2.596 (2.58%)
+## [1] shape + color + ID : 2.769 (2.59%)
 ## ---
 ##  Denominator:
 ## Type: BFlinearModel, JZS
@@ -182,7 +191,7 @@ The main effects model is preferred over the model with the interaction by a fac
 <div class="chunk"><div class="rcode"><div class="source"><pre class="knitr r">samples = <span class="functioncall">posterior</span>(bfs[4], iterations = 10000)
 </pre></div></div></div>
 
-This samples from the posterior of the fourth numerator model in <code>bfs</code>, which is the model with interaction. <code>samples</samples> now contains the Gibbs sampler output:
+This samples from the posterior of the fourth numerator model in <code>bfs</code>, which is the model with interaction. <code>samples</code> now contains the Gibbs sampler output:
 <div class="chunk"><div class="rcode"><div class="source"><pre class="knitr r"><span class="functioncall">summary</span>(samples[, <span class="functioncall">c</span>(1:5, 18:21)])
 </pre></div><div class="output"><pre class="knitr r">## 
 ## Iterations = 1:10000
@@ -194,28 +203,28 @@ This samples from the posterior of the fourth numerator model in <code>bfs</code
 ##    plus standard error of the mean:
 ## 
 ##                                        Mean    SD Naive SE Time-series SE
-## mu                                 44.99479 0.694  0.00694        0.00759
-## shape-round                         0.43051 0.191  0.00191        0.00161
-## shape-square                       -0.43051 0.191  0.00191        0.00161
-## color-color                        -0.43057 0.190  0.00190        0.00218
-## color-monochromatic                 0.43057 0.190  0.00190        0.00218
-## shape:color-round.&.color          -0.00152 0.165  0.00165        0.00165
-## shape:color-round.&.monochromatic   0.00152 0.165  0.00165        0.00165
-## shape:color-square.&.color          0.00152 0.165  0.00165        0.00165
-## shape:color-square.&.monochromatic -0.00152 0.165  0.00165        0.00165
+## mu                                 44.99151 0.691  0.00691        0.00802
+## shape-round                         0.42698 0.190  0.00190        0.00215
+## shape-square                       -0.42698 0.190  0.00190        0.00215
+## color-color                        -0.42854 0.189  0.00189        0.00200
+## color-monochromatic                 0.42854 0.189  0.00189        0.00200
+## shape:color-round.&.color          -0.00155 0.164  0.00164        0.00159
+## shape:color-round.&.monochromatic   0.00155 0.164  0.00164        0.00159
+## shape:color-square.&.color          0.00155 0.164  0.00164        0.00159
+## shape:color-square.&.monochromatic -0.00155 0.164  0.00164        0.00159
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##                                       2.5%    25%      50%    75%   97.5%
-## mu                                 43.6091 44.566 44.99583 45.437 46.3552
-## shape-round                         0.0661  0.301  0.42901  0.555  0.8171
-## shape-square                       -0.8171 -0.555 -0.42901 -0.301 -0.0661
-## color-color                        -0.8124 -0.556 -0.42974 -0.301 -0.0699
-## color-monochromatic                 0.0699  0.301  0.42974  0.556  0.8124
-## shape:color-round.&.color          -0.3226 -0.108 -0.00206  0.107  0.3261
-## shape:color-round.&.monochromatic  -0.3261 -0.107  0.00206  0.108  0.3226
-## shape:color-square.&.color         -0.3261 -0.107  0.00206  0.108  0.3226
-## shape:color-square.&.monochromatic -0.3226 -0.108 -0.00206  0.107  0.3261
+## mu                                 43.5959 44.557 44.99460 45.434 46.3612
+## shape-round                         0.0612  0.301  0.42580  0.553  0.8006
+## shape-square                       -0.8006 -0.553 -0.42580 -0.301 -0.0612
+## color-color                        -0.7984 -0.552 -0.42969 -0.303 -0.0616
+## color-monochromatic                 0.0616  0.303  0.42969  0.552  0.7984
+## shape:color-round.&.color          -0.3312 -0.107 -0.00117  0.106  0.3177
+## shape:color-round.&.monochromatic  -0.3177 -0.106  0.00117  0.107  0.3312
+## shape:color-square.&.color         -0.3177 -0.106  0.00117  0.107  0.3312
+## shape:color-square.&.monochromatic -0.3312 -0.107 -0.00117  0.106  0.3177
 </pre></div></div></div>
 
 
