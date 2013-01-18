@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Workshop: Bayes factors for linear models</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+</head>
+
+<body>
+<h1>Workshop: Bayes factors for linear models</h1>
+
+<h2>Introduction</h2>
+
+<p>Bayesian analysis is quickly becoming part of the standard in the behavioural and social sciences. It has many advantages over some of the standard analyses: easier interpretation of parameter estimates, straightforward implementation and fitting of complex multilevel models, and a principled accounting of epistemic uncertainty. Bayesian analysis is a powerful tool for scientific data analysis. One of the most compelling aspects of Bayesian analysis is the ability to formally compute statistical evidence. The Bayes factor &mdash; a measure of rational belief change compelled by the data &mdash; is a straightforward measure of evidence from the data.</p>
+
+<p>Although Bayes factors have been used and advocated by Bayesian statisticians over half a century, there have been several obstacles to the widespread adoption of Bayes factors: development of acceptible &ldquo;default&rdquo; families of prioes, and the difficulty of computing Bayes factors. Recently several advances in the Bayesian literature that have made Bayes factors a plausible. <a href="#liang">Liang, Paulo, Molina, Clyde, and Berger (2008)</a> and <a href="#rouder">Rouder, Morey, Speckman, and Province (2012)</a> have developed &ldquo;default&rdquo; priors that are suitable for analysis of regression designs and ANOVA designs, respectively. In addition, Morey and Rouder have developed a software package in R that computes the Bayes factors. The <code>BayesFactor</code> package allows the computation and manipulation of Bayes factors in regression and ANOVA, as well as the estimation of parameters through MCMC. The software is easy-to-use and freely-available; a short overview can be found at <a href="http://bayesfactorpcl.r-forge.r-project.org/">http://bayesfactorpcl.r-forge.r-project.org/</a>. The <code>BayesFactor</code> package makes Bayesian analysis of linear mixed models and linear regression models simple:</p>
+
+<pre><code class="r">anovaBF(RT ~ shape * color + ID, data = puzzles, whichRandom = &quot;ID&quot;)
+</code></pre>
+
+<pre><code>## Bayes factor analysis
+## --------------
+## [1] shape + ID                       : 2.901 (1.4%)
+## [2] color + ID                       : 2.768 (1.41%)
+## [3] shape + color + ID               : 11.76 (1.63%)
+## [4] shape + color + shape:color + ID : 4.636 (1.96%)
+## ---
+##  Denominator:
+## Type: BFlinearModel, JZS
+## RT ~ ID
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtAAAAEgCAMAAACq87QqAAAAflBMVEX9/v0AAAAAADkAAGUAOTkAOWUAOY8AZrU5AAA5ADk5AGU5OWU5OY85j9plAABlADllAGVlOQBlZgBlZjlltf2EcP+POQCPOTmPjzmPj2WPj9qP2/21ZgC1/v2+vr7ajznaj4/a24/a/rXa/v39tWX924/9/rX9/tr9/v3/AABB6ey3AAAAKnRSTlP/////////////////////////////////////////////////////AP+MjuKjAAAACXBIWXMAAAsSAAALEgHS3X78AAAKvElEQVR4nO2dDXva2BFGV3Zru92aTbrU/TCGtrYx+f9/cHUlkIRBQZgrZubVOc+zCbL0Mpdwogw33swvGwAhfrFeAEBOEBqkQGiQAqFBCoQGKRAapEBokAKhQQqEBikQGqRAaJACoUEKhAYpEBqkQGiQAqFBCoQGKRAapEBokAKhQQqEBikQGqRAaJACoUEKhA7JelYkbl82H0/Vo+L+4Irbl+1Vc5MlGoHQIdmqWty9DhC6eDRZow0I7ZlF5Wn68f2huh/vSLrufizP3b0eRGuh0/m3blAehPbMW3kLLtW8ea7vta23x4VOV8036//srtieX0yp6UBoz3w83TxXVn++Ce+aiarRaE6uOh1GR+gVQoMTVqWd6QZbCbzXcnQ+7jVC//cltSb1ZQgNDlnP7v5fWZl66KK8XTdfrz7y1Z/2TvTQtBzgh8XNv5tNio6Ylaql5NUX+FDYAaF9U0qb7svVDbpo7rnbj4Or4tQuB9t24IzF7oNf1XHsC/3xVJ08JfSEGg6EBjEQGqRAaJACoUEKhAYpEBqkQGiQAqFBCoQGKRAapEBokAKhQQqEBikQGqRAaJACoUEKhAYpEBqkQGiQAqFBCoQGKRAapFAQujCuv5x0eev6n8rLCb0cdDDsqutEPK0legShHUQ8rSV6BKEdRDytJXoEoR1EPK0legShHUQ8rSV6RERoY5aTLp+r/lfffUWh/2HLctLlM9VH6BaEFqiP0C17Qi8HHQy76joRT2uxi9RC00MnEFoggtAtCC0QQegWhBaIIHQLQgtEELqFXQ6B+uxytCC0QH2EbkFogfoI3UIPLRChh25BaIEIQrcgtEAEoVsQWiDiXuj3v77kTZWn6hHuB6Or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" alt="plot of chunk unnamed-chunk-3"/> </p>
+
+<p>(In this linear mixed model analysis, the Bayes factors indicate that the data favor the main-effects model over the intercept-only model by a factor of about 12.)</p>
+
+<h2>Workshop outline</h2>
+
+<ol>
+<li>Introdution to Bayesian analysis
+
+<ul>
+<li>Bayesian philosophy and logic</li>
+<li>Basic Bayesian ideas</li>
+<li>Simple Bayesian analyses</li>
+</ul></li>
+<li>Bayes factors
+
+<ul>
+<li>What is a Bayes factor?</li>
+<li>Bayes factors for linear models</li>
+</ul></li>
+<li>The <code>BayesFactor</code> package
+
+<ul>
+<li>Basic analysis concepts</li>
+<li>Estimating Bayes factors</li>
+<li>Estimating posterior distributions</li>
+</ul></li>
+<li><code>BayesFactor</code> in practice
+
+<ul>
+<li>Bring your laptop to analyze your own data</li>
+<li>&hellip;or complete a hands-on pre-made assignment with supervision</li>
+</ul></li>
+</ol>
+
+<h2>References</h2>
+
+<p><a id="liang"></a>
+Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423 (<a href="http://www.isds.duke.edu/courses/Spring09/sta244/Handouts/hyper-g.pdf">PDF</a>)</p>
+
+<p><a id="rouder"></a>
+Rouder, J. N. and Morey, R. D. and Speckman, P. L. and Province, J. M. (2012), Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology, 56, pp. 356Â–374 (<a href="http://pcl.missouri.edu/sites/default/files/Rouder.JMP_.2012.pdf">PDF</a>)</p>
+
+</body>
+
+</html>
+

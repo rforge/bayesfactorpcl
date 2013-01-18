@@ -1,0 +1,57 @@
+Workshop: Bayes factors for linear models
+========================================================
+
+
+Introduction
+-------------
+
+Bayesian analysis is quickly becoming part of the standard in the behavioural and social sciences. It has many advantages over some of the standard analyses: easier interpretation of parameter estimates, straightforward implementation and fitting of complex multilevel models, and a principled accounting of epistemic uncertainty. Bayesian analysis is a powerful tool for scientific data analysis. One of the most compelling aspects of Bayesian analysis is the ability to formally compute statistical evidence. The Bayes factor &mdash; a measure of rational belief change compelled by the data &mdash; is a straightforward measure of evidence from the data.
+
+Although Bayes factors have been used and advocated by Bayesian statisticians over half a century, there have been several obstacles to the widespread adoption of Bayes factors: development of acceptible "default" families of prioes, and the difficulty of computing Bayes factors. Recently several advances in the Bayesian literature that have made Bayes factors a plausible. <a href="#liang">Liang, Paulo, Molina, Clyde, and Berger (2008)</a> and <a href="#rouder">Rouder, Morey, Speckman, and Province (2012)</a> have developed "default" priors that are suitable for analysis of regression designs and ANOVA designs, respectively. In addition, Morey and Rouder have developed a software package in R that computes the Bayes factors. The `BayesFactor` package allows the computation and manipulation of Bayes factors in regression and ANOVA, as well as the estimation of parameters through MCMC. The software is easy-to-use and freely-available; a short overview can be found at [http://bayesfactorpcl.r-forge.r-project.org/](http://bayesfactorpcl.r-forge.r-project.org/). The `BayesFactor` package makes Bayesian analysis of linear mixed models and linear regression models simple:
+
+
+```{r echo=FALSE,message=FALSE,results='hide'}
+library(BayesFactor)
+data(puzzles)
+bf = anovaBF(RT ~ shape*color + ID, data=puzzles,whichRandom="ID",progress=FALSE)
+#chains = posterior(bf[4],iterations=1000000,progress=FALSE)
+```
+```{r eval=FALSE}
+anovaBF(RT ~ shape*color + ID, data=puzzles,whichRandom="ID")
+```
+```{r echo=FALSE,fig.width=10,fig.height=4}
+bf
+par(mfrow=c(1,1),las=1)
+#plot(density(chains[,1]),main=colnames(chains)[1],ylab="Posterior density",xlab="Effect")
+plot(bf,marginExpand = .30,logbase="log2")
+```
+(In this linear mixed model analysis, the Bayes factors indicate that the data favor the main-effects model over the intercept-only model by a factor of about 12.)
+
+
+
+Workshop outline
+------------
+
+1. Introdution to Bayesian analysis
+  * Bayesian philosophy and logic
+  * Basic Bayesian ideas
+  * Simple Bayesian analyses
+2. Bayes factors
+  * What is a Bayes factor?
+  * Bayes factors for linear models
+3. The `BayesFactor` package
+  * Basic analysis concepts
+  * Estimating Bayes factors
+  * Estimating posterior distributions
+4. `BayesFactor` in practice
+  * Bring your laptop to analyze your own data
+  * ...or complete a hands-on pre-made assignment with supervision
+
+
+References
+-------
+<a id="liang"></a>
+Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423 ([PDF](http://www.isds.duke.edu/courses/Spring09/sta244/Handouts/hyper-g.pdf))
+
+<a id="rouder"></a>
+Rouder, J. N. and Morey, R. D. and Speckman, P. L. and Province, J. M. (2012), Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology, 56, pp. 356–374 ([PDF](http://pcl.missouri.edu/sites/default/files/Rouder.JMP_.2012.pdf))
