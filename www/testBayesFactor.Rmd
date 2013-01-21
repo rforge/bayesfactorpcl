@@ -62,7 +62,7 @@ for(i in 1:3){
 
 ### Bayes factor
 
-Test multicore
+Test multicore and Laplace
 ```{r}
 t.mc = system.time(bfs.mc <- anovaBF(y ~ A*B*C + ID, data = effects, 
                                      whichRandom="ID",
@@ -72,20 +72,30 @@ t.sc = system.time(bfs.sc <- anovaBF(y ~ A*B*C + ID, data = effects,
                                      whichRandom="ID",
                                      multicore = FALSE, progress = FALSE)
 )
+t.la = system.time(bfs.la <- anovaBF(y ~ A*B*C + ID, data = effects, 
+                                     whichRandom="ID",
+                                     multicore = FALSE, progress = FALSE, method = "laplace")
+)
+
 ```
 
-```{r}
+```{r fig.width=10,fig.height=5}
 t.sc
 t.mc
-                   
-plot(extractBF(sort(bfs.mc))$bf,extractBF(sort(bfs.sc))$bf)
+t.la
+
+par(mfrow=c(1,2))
+plot(log(extractBF(sort(bfs.sc))$bf),log(extractBF(sort(bfs.mc))$bf))
 abline(0,1)
+plot(log(extractBF(sort(bfs.sc))$bf),log(extractBF(sort(bfs.la))$bf))
+abline(0,1)
+
 head(bfs.mc)
 ```
 
 ### Gibbs sampler
 ```{r message=FALSE}
-chains <- lmBF(y ~ A + B + C + ID, data=effects, whichRandom = "ID", posterior=TRUE, iterations=10000)
+chains <- lmBF(y ~ A + B + C + ID, data=effects, whichRandom = "ID", posterior=TRUE, iterations=10000,progress=FALSE)
 
 lmerObj <- lmer(y ~ A + B + C + (1|ID), data=effects)
 chainsLmer = sim(lmerObj,n.sims=10000)
