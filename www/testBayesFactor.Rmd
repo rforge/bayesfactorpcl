@@ -76,6 +76,11 @@ t.la = system.time(bfs.la <- anovaBF(y ~ A*B*C + ID, data = effects,
                                      whichRandom="ID",
                                      multicore = FALSE, progress = FALSE, method = "laplace")
 )
+t.lamc = system.time(bfs.lamc <- anovaBF(y ~ A*B*C + ID, data = effects, 
+                                     whichRandom="ID",
+                                     multicore = TRUE, progress = FALSE, method = "laplace")
+)
+
 
 ```
 
