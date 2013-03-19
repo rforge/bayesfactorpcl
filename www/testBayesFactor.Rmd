@@ -8,9 +8,9 @@ library(MASS)
 library(doMC)
 library(arm)
 
-#print(st <- as.integer(Sys.time()))
-#set.seed(st)
-set.seed(1)
+print(st <- as.integer(Sys.time()))
+set.seed(st)
+
 ```
 
 ANOVA
