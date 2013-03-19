@@ -8,9 +8,9 @@ library(MASS)
 library(doMC)
 library(arm)
 
-print(st <- as.integer(Sys.time()))
-set.seed(st)
-
+#print(st <- as.integer(Sys.time()))
+#set.seed(st)
+set.seed(1)
 ```
 
 ANOVA
@@ -117,7 +117,7 @@ abline(0,1)
 Compare estimates of participant effects
 ```{r}
 AG.raneff <- chainsLmer@ranef$ID[,,1]
-BF.raneff <-  chains[,grep('ID',colnames(chains),fixed='TRUE')]
+BF.raneff <-  chains[,grep('ID-',colnames(chains),fixed='TRUE')]
 plot(colMeans(BF.raneff),colMeans(AG.raneff))
 abline(0,1)
 
