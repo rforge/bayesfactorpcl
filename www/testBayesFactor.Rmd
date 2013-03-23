@@ -62,40 +62,26 @@ for(i in 1:3){
 
 ### Bayes factor
 
-Test multicore and Laplace
+Test Laplace
 ```{r}
-t.mc = system.time(bfs.mc <- anovaBF(y ~ A*B*C + ID, data = effects, 
+t.mc = system.time(bfs.sc <- anovaBF(y ~ A*B*C + ID, data = effects, 
                                      whichRandom="ID",
                                      multicore = TRUE, progress = FALSE)
-)
-t.sc = system.time(bfs.sc <- anovaBF(y ~ A*B*C + ID, data = effects, 
-                                     whichRandom="ID",
-                                     multicore = FALSE, progress = FALSE)
 )
 t.la = system.time(bfs.la <- anovaBF(y ~ A*B*C + ID, data = effects, 
                                      whichRandom="ID",
                                      multicore = FALSE, progress = FALSE, method = "laplace")
 )
-t.lamc = system.time(bfs.lamc <- anovaBF(y ~ A*B*C + ID, data = effects, 
-                                     whichRandom="ID",
-                                     multicore = TRUE, progress = FALSE, method = "laplace")
-)
-
-
 ```
 
 ```{r fig.width=10,fig.height=5}
-t.sc
 t.mc
 t.la
 
-par(mfrow=c(1,2))
-plot(log(extractBF(sort(bfs.sc))$bf),log(extractBF(sort(bfs.mc))$bf))
-abline(0,1)
 plot(log(extractBF(sort(bfs.sc))$bf),log(extractBF(sort(bfs.la))$bf))
 abline(0,1)
 
-head(bfs.mc)
+head(bfs.sc)
 ```
 
 ### Gibbs sampler
@@ -159,5 +145,101 @@ plot(sort(AGsd/BFsd))
 ## probabily due to prior
 
 ```
+
+Comparing to LMER
+-----------
+
+We begin by loading required packages...
+```{r message=FALSE,warning=FALSE}
+library(languageR)
+library(lme4)
+library(xtable)
+```
+
+...and creating the data set to analyze.
+```{r}
+data(primingHeidPrevRT)
+
+primingHeidPrevRT$lRTmin1 <- log(primingHeidPrevRT$RTmin1)
+
+###Frequentist 
+
+lr4 <- lmer(RT ~ Condition + (1|Word)+ (1|Subject) + lRTmin1 + RTtoPrime + ResponseToPrime + ResponseToPrime*RTtoPrime +BaseFrequency ,primingHeidPrevRT)
+# I assume this is getting rid of outliers?
+INDOL <- which(scale(resid(lr4)) < 2.5)
+primHeidOL <- primingHeidPrevRT[INDOL,]
+```
+
+The first thing we have to do is center the continuous variables. This is done automatically by lmBF(), as required by Liang et al. (2008). This, of course, changes the definition of the intercept.
+
+```{r}
+# Center continuous variables
+primHeidOL$BaseFrequency <- primHeidOL$BaseFrequency - mean(primHeidOL$BaseFrequency)
+primHeidOL$lRTmin1 <- primHeidOL$lRTmin1 - mean(primHeidOL$lRTmin1)
+primHeidOL$RTtoPrime <- primHeidOL$RTtoPrime - mean(primHeidOL$RTtoPrime)
+```
+
+Now we perform both analyses on the same data, and place the fixed effect estimates for both programs into their own vectors.
+
+```{r}
+# LMER
+lr4b <- lmer(  RT ~ Condition + ResponseToPrime +  (1|Word)+ (1|Subject) + lRTmin1 + RTtoPrime + ResponseToPrime*RTtoPrime + BaseFrequency , primHeidOL)
+# BayesFactor
+B5out <- lmBF( RT ~ Condition + ResponseToPrime +     Word +    Subject  + lRTmin1 + RTtoPrime + ResponseToPrime*RTtoPrime + BaseFrequency  , primHeidOL , whichRandom = c("Word", "Subject"),  posterior = TRUE, iteration = 50000, progress=FALSE,columnFilter=c("Word","Subject"))
+
+lmerEff <- lr4b@fixef
+bfEff <- colMeans(B5out[,1:10])
+```
+
+`lmer` uses a "reference cell" parameterization, rather than imposing sum-to-0 constraints. We can tell what the reference cell is by looking at the parameter names.
+
+```{r results='asis'}
+print(xtable(cbind("lmer fixed effects"=names(lmerEff))), type='html')
+```
+
+Notice what's missing: for the categorical parameters, we are missing `Conditionbaseheid` and `ResponseToPrimecorrect`. For the slope parameters, we are missing `ResponseToPrimecorrect:RTtoPrime`. The missing effects tell us what the reference cells are. Since the reference cell parameterization is just a linear transformation of the sum-to-0 parameterization, we can create a matrix that allows us to move from one to the other. We call this $10 \times 7$ matrix `Z`. It takes the 7 parameters from `lmer` and maps them into the 10 linearly constrained parameters from `lmBF`.
+
+The first row of `Z` transforms the intercept (reference cell) to the grand mean (sum-to-0). We have to add half of the two fixed effects back into the intercept. The second and third row divide the totl effect of `Condition` into two equal parts, one for `baseheid` and one for `heid`. Rows four and five do the same for `ResponseToPrime`.
+
+The slopes that do not enter into interactions are fine as they are; however, `ResponseToPrimecorrect:RTtoPrime` serves as our reference cell for the `ResponseToPrime:RTtoPrime` interaction. We treat these slopes analogously to the grand mean; we take `RTtoPrime` and add half the `ResponseToPrimeincorrect:RTtoPrime` effect to it, to make it a grand mean slope. The last two rows divide up the `ResponseToPrimeincorrect:RTtoPrime` effect between `ResponseToPrimeincorrect:RTtoPrime` and `ResponseToPrimecorrect:RTtoPrime`.
+
+```{r tidy=FALSE}
+# Adjust lmer results from reference cell to sum to 0
+Z = c(1,   1/2, 1/2,    0,    0,    0,    0,
+      0,  -1/2,   0,    0,    0,    0,    0,
+      0,   1/2,   0,    0,    0,    0,    0,
+      0,     0,-1/2,    0,    0,    0,    0,
+      0,     0, 1/2,    0,    0,    0,    0,
+      0,     0,   0,    1,    0,    0,    0,
+      0,     0,   0,    0,    1,    0,  1/2,
+      0,     0,   0,    0,    0,    1,    0,
+      0,     0,   0,    0,    0,    0, -1/2,
+      0,     0,   0,    0,    0,    0,  1/2)
+dim(Z) = c(7,10)
+Z = t(Z)
+
+# Do reparameterization by pre-multimplying the parameter vector by Z
+reparLmer <- Z %*% matrix(lmerEff,ncol=1)
+
+# put results in data.frame for comparison
+sideBySide <- data.frame(BayesFactor=bfEff,lmer=reparLmer)
+```
+
+We can look at them side by side for comparison:
+```{r results='asis'}
+print(xtable(sideBySide,digits=4), type='html')
+```
+
+...and plot them:
+```{r}
+# Notice Bayesian shrinkage
+par(cex=1.5)
+plot(sideBySide[-1,],pch=21,bg=rgb(0,0,1,.2),col="black",asp=TRUE,cex=1.2, main="fixed effects\n (excluding grand mean)")
+abline(0,1, lty=2)
+```
+The results are quite close to one another, with a bit of Bayesian shrinkage.
+
+This was all quite tedious. There must be a way of doing this automatically, so that you don't have to generate the `Z` matrix for each model you run. I believe this can be done with contrasts, but I don't know how. A thorough internet search, and perhaps a post on [R-help](https://stat.ethz.ch/mailman/listinfo/r-help), would probably turn up something.
+
 
 
