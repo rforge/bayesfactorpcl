@@ -1,0 +1,130 @@
+Test of GLM in Bayes factor
+========================================================
+
+```{r message=FALSE}
+library(BayesFactor)
+set.seed(7)
+```
+
+```{r}
+## Example take from lm() example, with continuous covariate added
+ctl <- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
+trt <- c(4.81,4.17,4.41,3.59,5.87,3.83,6.03,4.89,4.32,4.69)
+group <- gl(2,10,20, labels=c("Ctl","Trt"))
+weight <- c(ctl, trt)
+
+x = rnorm(weight)
+# center continuous variable
+x = x - mean(x)
+
+weight = weight + .5 * x + rnorm(weight,0,.1)
+
+weight = weight - mean(weight)
+
+plot(x,weight,col=as.integer(group)+1,pch=19)
+abline(lm(weight[group=="Ctl"] ~ x[group=="Ctl"]),col=2,lty=2)
+abline(lm(weight[group=="Trt"] ~ x[group=="Trt"]),col=3,lty=2)
+
+
+dat = data.frame(weight=weight,group=group,x=x)
+
+lm.D9 <- lm(weight ~ group*x, dat=dat)
+summary(lm.D9)
+
+
+full = lmBF(weight ~ group + x + group:x, dat, progress=FALSE)
+noint = lmBF(weight ~ x + group, dat, progress=FALSE)
+grponly = lmBF(weight ~ group, dat, progress=FALSE)
+xonly = lmBF(weight ~ x, dat, progress=FALSE)
+
+intx = lmBF(weight ~ x + group:x, dat, progress=FALSE)
+intgrp = lmBF(weight ~ group + group:x, dat, progress=FALSE)
+
+allBFs = c(noint,grponly,xonly,intx,intgrp)/full
+
+allBFsVsNull = c(full,noint,grponly,xonly,intx,intgrp)
+allBFsVsNull
+
+```
+
+
+```{r fig.width=7, fig.height=6}
+plot(allBFsVsNull)
+
+
+chn = posterior(full,iterations=1000,unreduce=TRUE,progress=FALSE)
+
+slps = colMeans(chn[,"x-x"] + chn[,c("group:x-Ctl.&.x","group:x-Trt.&.x")])
+ints = colMeans(chn[,"mu"] + chn[,c("group-Ctl","group-Trt")])
+
+
+plot(x,weight,col=as.integer(group)+1,pch=19)
+abline(ints[1],slps[1],col=2)
+abline(ints[2],slps[2],col=3)
+abline(v=0,col="gray")
+
+abline(lm(weight[group=="Ctl"] ~ x[group=="Ctl"]),col=2,lty=2)
+abline(lm(weight[group=="Trt"] ~ x[group=="Trt"]),col=3,lty=2)
+
+```
+
+Check using Savage-Dickey
+-----------------
+
+### check group
+```{r}
+
+chn = posterior(full,iterations=100000,unreduce=FALSE,progress=FALSE)
+
+stdz = chn[,"group_redu_1"] / sqrt(chn[,"sig2"])
+
+plot(density(stdz))
+abline(h=0,col="gray")
+xx = seq(-3,3,len=100)
+lines(xx,dcauchy(xx,scale=.5),col="red")
+abline(v=0)
+abline(h=dcauchy(0,scale=.5)*as.vector(intx/full))
+
+```
+
+The two continuous covariates can be checked jointly, because their priors are not independent and because their prior scales depend on $N(X'X)^{-1}$.
+
+```{r}
+library(mvtnorm)
+# Density estimation function
+dest = function(v,XtX,X0tX0,N,y,XX,idx){
+  beta = v[c(1,3,4,2)]
+  sig2 = v[5]
+  g1 = v[7]
+  g2 = v[6]
+  X=XX
+  
+  #Sample beta
+  Sigma = XtX
+  Sigma[2:3,2:3] = Sigma[2:3,2:3] + X0tX0/(g1*N)
+  Sigma[4,4] = Sigma[4,4] + 1/g2
+  Sigma = solve(Sigma)
+  Mu = Sigma %*% t(X) %*% y / sqrt(sig2)
+  dmvnorm(c(0,0),Mu[2:3],Sigma[2:3,2:3])
+}
+
+ X = model.matrix(weight ~ group + x)
+ X[,2] = (X[,2] - 1/2) * sqrt(2)
+ Xint = X[,2]*X[,3]
+ X = cbind(X,Xint)
+ X = X[,c(1,3,4,2)]
+ y = matrix(weight,ncol=1)
+
+ XtX = t(X)%*%X
+ X0tX0 = XtX[2:3,2:3]
+
+densEst = apply(chn,1,dest,XtX=XtX,X0tX0,N=length(y),y=y,XX=X)
+
+ldensPost = log(mean(densEst))
+ldensPrior = dmvt(c(0,0),c(0,0),length(y)*solve(X0tX0))
+
+exp(ldensPost - ldensPrior)
+
+grponly/full
+
+```
