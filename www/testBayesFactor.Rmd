@@ -7,6 +7,7 @@ library(BayesFactor)
 library(MASS)
 library(doMC)
 library(arm)
+options(BFprogress=FALSE)
 
 print(st <- as.integer(Sys.time()))
 set.seed(st)
@@ -66,11 +67,11 @@ Test Laplace
 ```{r}
 t.mc = system.time(bfs.sc <- anovaBF(y ~ A*B*C + ID, data = effects, 
                                      whichRandom="ID",
-                                     multicore = TRUE, progress = FALSE)
+                                     multicore = TRUE)
 )
 t.la = system.time(bfs.la <- anovaBF(y ~ A*B*C + ID, data = effects, 
                                      whichRandom="ID",
-                                     multicore = FALSE, progress = FALSE, method = "laplace")
+                                     multicore = FALSE, method = "laplace")
 )
 ```
 
@@ -86,7 +87,7 @@ head(bfs.sc)
 
 ### Gibbs sampler
 ```{r message=FALSE}
-chains <- lmBF(y ~ A + B + C + ID, data=effects, whichRandom = "ID", posterior=TRUE, iterations=10000,progress=FALSE)
+chains <- lmBF(y ~ A + B + C + ID, data=effects, whichRandom = "ID", posterior=TRUE, iterations=10000)
 
 lmerObj <- lmer(y ~ A + B + C + (1|ID), data=effects)
 chainsLmer = sim(lmerObj,n.sims=10000)
@@ -185,7 +186,7 @@ Now we perform both analyses on the same data, and place the fixed effect estima
 # LMER
 lr4b <- lmer(  RT ~ Condition + ResponseToPrime +  (1|Word)+ (1|Subject) + lRTmin1 + RTtoPrime + ResponseToPrime*RTtoPrime + BaseFrequency , primHeidOL)
 # BayesFactor
-B5out <- lmBF( RT ~ Condition + ResponseToPrime +     Word +    Subject  + lRTmin1 + RTtoPrime + ResponseToPrime*RTtoPrime + BaseFrequency  , primHeidOL , whichRandom = c("Word", "Subject"),  posterior = TRUE, iteration = 50000, progress=FALSE,columnFilter=c("Word","Subject"))
+B5out <- lmBF( RT ~ Condition + ResponseToPrime +     Word +    Subject  + lRTmin1 + RTtoPrime + ResponseToPrime*RTtoPrime + BaseFrequency  , primHeidOL , whichRandom = c("Word", "Subject"),  posterior = TRUE, iteration = 50000,columnFilter=c("Word","Subject"))
 
 lmerEff <- lr4b@fixef
 bfEff <- colMeans(B5out[,1:10])
