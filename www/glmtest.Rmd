@@ -121,7 +121,10 @@ dest = function(v,XtX,X0tX0,N,y,XX,idx){
 densEst = apply(chn,1,dest,XtX=XtX,X0tX0,N=length(y),y=y,XX=X)
 
 ldensPost = log(mean(densEst))
-ldensPrior = dmvt(c(0,0),c(0,0),length(y)*solve(X0tX0))
+
+rscaleCont = sqrt(2)/4
+
+ldensPrior = dmvt(c(0,0),c(0,0),rscaleCont^2*length(y)*solve(X0tX0))
 
 exp(ldensPost - ldensPrior)
 
