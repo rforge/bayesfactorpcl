@@ -48,6 +48,8 @@ A Cauchy prior is placed on the standardized mean difference delta. The \code{r.
  this Cauchy prior, with \code{r.scale=1} yielding a standard Cauchy prior. A noninformative Jeffreys prior is 
 placed on the variance of the random shocks of the auto-regressive process. A beta prior is placed on the auto-correlation
  theta. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
+ 
+Missing data are not allowed; the slower \code{\link{ttest.Gibbs.AR}} function can be used instead in case of missing data. 
 }
 \value{
 A scalar giving the monte carlo or Gaussian quadrature estimate of the log Bayes factor.

@@ -12,6 +12,8 @@
 #include <R_ext/Lapack.h>
 #include <R_ext/BLAS.h>
 
+int minc(int x, int y);
+void inverse(double *A, int N);
 
 void debugPrintMatrix(double *X, int rows, int cols);
 void debugPrintVector(double *x, int len);
@@ -48,8 +50,7 @@ internal_symmetrize(double *a, int nc)
 {
     int i,j;
     for (i = 1; i < nc; i++)
-	for (j = 0; j < i; j++)
+  for (j = 0; j < i; j++)
 	    a[i + j*nc] = a[j + i*nc];
     return a;
 }
-

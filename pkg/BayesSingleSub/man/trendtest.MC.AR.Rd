@@ -49,6 +49,8 @@ Cauchy priors are placed on the standardized trend and intercept differences. Th
 control the scales of these Cauchy priors, with \code{r.scaleInt = 1} and \code{r.scaleSlp = 1} yielding standard Cauchy priors. 
 A noninformative Jeffreys prior is placed on the variance of the random shocks of the auto-regressive process. A beta prior is 
 placed on the auto-correlation theta. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
+
+Missing data are not allowed; the slower \code{\link{trendtest.Gibbs.AR}} function can be used instead in case of missing data. 
 }
 \value{
 A matrix containing the Monte carlo estimates of the log Bayes factors.

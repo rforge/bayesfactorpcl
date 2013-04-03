@@ -61,6 +61,8 @@ A Cauchy prior is placed on the standardized mean difference delta. The \code{r.
  this Cauchy prior, with \code{r.scale=1} yielding a standard Cauchy prior. A noninformative Jeffreys prior is 
 placed on the variance of the random shocks of the auto-regressive process. A beta prior is placed on the auto-correlation
  rho. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
+ 
+ Missing data are sampled from the likelihood function, conditioned at the observed data, at each iteration of the Gibbs sampler.
 }
 \value{
 if \code{return.chains=FALSE}: a scalar giving an MCMC estimate of the log Bayes factor, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted)

@@ -1,5 +1,26 @@
 #include "utility.h"
 
+int minc(int x, int y){
+
+  if( (x)<(y)){
+  return(x);
+  }
+
+	else{
+	return(y);
+	}
+}
+
+
+void inverse(double *A, int N)
+{
+  int IPIV[N+1], INFO, LWORK = N*N;
+  double WORK[LWORK];
+  
+  F77_NAME(dgetrf)(&N, &N, A, &N, IPIV, &INFO);
+  F77_NAME(dgetri)(&N, A, &N, IPIV, WORK, &LWORK, &INFO);
+  
+}
 
 void debugPrintMatrix(double *X, int rows, int cols)
 {
@@ -238,4 +259,3 @@ void rmvGaussianC(double *mu, double *Sigma, int p)
   //PutRNGstate();
   Free(scCp);
 }
-

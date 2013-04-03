@@ -66,6 +66,8 @@ Cauchy priors are placed on the standardized trend and intercept differences. Th
 control the scales of these Cauchy priors, with \code{r.scaleInt = 1} and \code{r.scaleSlp = 1} yielding standard Cauchy priors. 
 A noninformative Jeffreys prior is placed on the variance of the random shocks of the auto-regressive process. A beta prior is 
 placed on the auto-correlation theta. The \code{alphaTheta} and \code{betaTheta} arguments control the form of this beta prior.
+
+Missing data are sampled from the likelihood function, conditioned at the observed data, at each iteration of the Gibbs sampler.
 }
 \value{
 if \code{return.chains=FALSE}: a matrix containing MCMC estimates of the log Bayes factors, computed using the Savage-Dickey method (Morey, Rouder, Pratte, and Speckman, submitted)

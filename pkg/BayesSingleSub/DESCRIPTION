@@ -1,7 +1,7 @@
 Package: BayesSingleSub
 Type: Package
 Title: Computation of Bayes factors for interrupted time-series designs 
-Version: 0.6.1
+Version: 0.6.2
 Date: 2012-11-28
 Author: Richard D. Morey, Rivka de Vries
 Maintainer: Richard D. Morey <richarddmorey@gmail.com>
