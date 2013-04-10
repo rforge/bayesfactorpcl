@@ -458,10 +458,12 @@ double thetaLogLikeAR_trend(double theta, double *beta, double *X, double sig2, 
 	return(loglike);
 }
 
-SEXP MCAR_trend(SEXP yR, SEXP NR, SEXP alphaThetaR, SEXP betaThetaR, SEXP rsqIntR, SEXP rsqSlpR, SEXP X0R, SEXP X1R, SEXP iterationsR, SEXP progressR, SEXP pBar, SEXP rho){
+SEXP MCAR_trend(SEXP yR, SEXP NR, SEXP NmissR, SEXP distMatR, SEXP alphaThetaR, SEXP betaThetaR, SEXP rsqIntR, SEXP rsqSlpR, SEXP X0R, SEXP X1R, SEXP iterationsR, SEXP progressR, SEXP pBar, SEXP rho){
 
 	int m,i, iterations = INTEGER_VALUE(iterationsR), N = INTEGER_VALUE(NR);
 	int progress = INTEGER_VALUE(progressR);
+  int Nmiss = INTEGER_VALUE(NmissR);
+  int *distMat = INTEGER_POINTER(distMatR);
 	double loglike[3], logsum[3], g1, g2, theta;
 	double alphaTheta = REAL(alphaThetaR)[0];
 	double betaTheta = REAL(betaThetaR)[0];
@@ -502,7 +504,7 @@ SEXP MCAR_trend(SEXP yR, SEXP NR, SEXP alphaThetaR, SEXP betaThetaR, SEXP rsqInt
 		g2 = 1/rgamma(0.5,2/rsqSlp);
 		theta = rbeta(alphaTheta,betaTheta);
 
-		MCmargLogLikeAR_trend(theta, g1, g2, REAL(yR), N, alphaTheta, betaTheta, rsqInt, rsqSlp, REAL(X0R), REAL(X1R), loglike);
+		MCmargLogLikeAR_trend(theta, Nmiss, distMat, g1, g2, REAL(yR), N, alphaTheta, betaTheta, rsqInt, rsqSlp, REAL(X0R), REAL(X1R), loglike);
 
 		if(m==0)
 		{
@@ -529,22 +531,24 @@ SEXP MCAR_trend(SEXP yR, SEXP NR, SEXP alphaThetaR, SEXP betaThetaR, SEXP rsqInt
 
 }
 
-SEXP MCmargLogLikeAR_trendR(SEXP thetaR, SEXP g1R, SEXP g2R, SEXP yR, SEXP NR, SEXP alphaThetaR, SEXP betaThetaR, SEXP rsqIntR, SEXP rsqSlpR, SEXP X0R, SEXP X1R){
+SEXP MCmargLogLikeAR_trendR(SEXP thetaR, SEXP NmissR, SEXP distMatR, SEXP g1R, SEXP g2R, SEXP yR, SEXP NR, SEXP alphaThetaR, SEXP betaThetaR, SEXP rsqIntR, SEXP rsqSlpR, SEXP X0R, SEXP X1R){
 	double theta = REAL(thetaR)[0], g1 = REAL(g1R)[0], g2 = REAL(g2R)[0];
 	double alphaTheta = REAL(alphaThetaR)[0], betaTheta = REAL(betaThetaR)[0];
 	int N = INTEGER_VALUE(NR);
+  int Nmiss = INTEGER_VALUE(NmissR);
+  int *distMat = INTEGER_POINTER(distMatR);
 	double rsqInt = REAL(rsqIntR)[0],rsqSlp = REAL(rsqSlpR)[0];
 
 	SEXP loglikeR;
 	PROTECT(loglikeR = allocVector(REALSXP, 3));
 
-	MCmargLogLikeAR_trend(theta, g1, g2, REAL(yR), N, alphaTheta, betaTheta, rsqInt, rsqSlp, REAL(X0R), REAL(X1R), REAL(loglikeR));
+	MCmargLogLikeAR_trend(theta, Nmiss, distMat, g1, g2, REAL(yR), N, alphaTheta, betaTheta, rsqInt, rsqSlp, REAL(X0R), REAL(X1R), REAL(loglikeR));
 
 	UNPROTECT(1);
 	return(loglikeR);
 }
 
-void MCmargLogLikeAR_trend(double theta, double g1, double g2, double *y, int N, double alphaTheta, double betaTheta, double rsqInt, double rsqSlp, double *X0, double *X1, double *like){
+void MCmargLogLikeAR_trend(double theta,  int Nmiss, int *distMat, double g1, double g2, double *y, int N, double alphaTheta, double betaTheta, double rsqInt, double rsqSlp, double *X0, double *X1, double *like){
 
 	int i,j,iOne=1,iTwo=2;
 	double invPsi[N*N],detInvPsi,dOne=1, det1, det2, dZero=0, quad;
@@ -559,7 +563,7 @@ void MCmargLogLikeAR_trend(double theta, double g1, double g2, double *y, int N,
 
 	AZERO(invPsi,N*N);
 
-
+  if(Nmiss == 0){
 	// Build invPsi matrix
 	invPsi[0] = 1;
 	invPsi[N*N-1] = 1;
@@ -576,7 +580,25 @@ void MCmargLogLikeAR_trend(double theta, double g1, double g2, double *y, int N,
 	}
 
 	detInvPsi = log(1-theta*theta);
+}
 
+if(Nmiss > 0){
+ 
+ for(i=0;i<N;i++)
+{
+invPsi[i + N*i] = 1/(1-theta*theta);
+for(j=0;j<i;j++)
+{
+invPsi[i + N*j] = invPsi[i + N*i] * pow(theta,distMat[i + N*j]);  
+invPsi[j + N*i] = invPsi[i + N*j];
+}
+}
+
+InvMatrixUpper(invPsi, N);
+internal_symmetrize(invPsi, N);
+  
+ detInvPsi = matrixDet(invPsi, N, N, 1);
+}
 
 	// Integral of beta0
 	quadformMatrix(X0,invPsi,N,2,tempM1,1,1);
@@ -673,15 +695,17 @@ void MCmargLogLikeAR_trend(double theta, double g1, double g2, double *y, int N,
 
 }
 
-SEXP MCnullMargLogLikeAR_trend(SEXP thetaR, SEXP yR, SEXP NR, SEXP alphaThetaR, SEXP betaThetaR, SEXP X0R){
+SEXP MCnullMargLogLikeAR_trend(SEXP thetaR, SEXP NmissR, SEXP distMatR, SEXP yR, SEXP NR, SEXP alphaThetaR, SEXP betaThetaR, SEXP X0R){
 
 	double theta = REAL(thetaR)[0], *y = REAL(yR);
 	int N = INTEGER_VALUE(NR);
+  int Nmiss = INTEGER_VALUE(NmissR);
+  int *distMat = INTEGER_POINTER(distMatR);
 	double alphaTheta = REAL(alphaThetaR)[0];
 	double betaTheta = REAL(betaThetaR)[0];
 	double *X0 = REAL(X0R);
 
-	int i,iOne=1,iTwo=2;
+	int i, j=0,iOne=1,iTwo=2;
 	double invPsi[N*N],detInvPsi,dOne=1, det1, dZero=0;
 
 	double tempM1[2*2];
@@ -691,10 +715,12 @@ SEXP MCnullMargLogLikeAR_trend(SEXP thetaR, SEXP yR, SEXP NR, SEXP alphaThetaR, 
 	SEXP returnR;
 	PROTECT(returnR = allocVector(REALSXP, 1));
 
-	AZERO(invPsi,N*N);
-
-
+  AZERO(invPsi,N*N);
+  
 	// Build invPsi matrix
+  
+  if(Nmiss == 0){
+    
 	invPsi[0] = 1;
 	invPsi[N*N-1] = 1;
 	invPsi[1] = -theta;
@@ -710,6 +736,26 @@ SEXP MCnullMargLogLikeAR_trend(SEXP thetaR, SEXP yR, SEXP NR, SEXP alphaThetaR, 
 	}
 
 	detInvPsi = log(1-theta*theta);
+  
+  }
+  
+  if(Nmiss > 0){
+ 
+  for(i=0;i<N;i++)
+  {
+  invPsi[i + N*i] = 1/(1-theta*theta);
+  for(j=0;j<i;j++)
+  {
+  invPsi[i + N*j] = invPsi[i + N*i] * pow(theta,distMat[i + N*j]);  
+  invPsi[j + N*i] = invPsi[i + N*j];
+  }
+  }
+
+  InvMatrixUpper(invPsi, N);
+  internal_symmetrize(invPsi, N);
+  
+  detInvPsi = matrixDet(invPsi, N, N, 1);
+  }
 
 
 	// Integral of beta0

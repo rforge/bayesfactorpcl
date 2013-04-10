@@ -2,9 +2,9 @@
 void sampleMiss(double *y, double B0, double B1, double *t, double sig2_e, double *Psi,
                 int Nobs, int Nmiss, int *miss, double *ySample);
 
-SEXP RMCTwoSampleAR(SEXP yR, SEXP NR, SEXP tR, SEXP rscaleR, SEXP alphaThetaR, SEXP betaThetaR, SEXP iterationsR);
+SEXP RMCTwoSampleAR(SEXP yR, SEXP NR, SEXP distMatR, SEXP tR, SEXP rscaleR, SEXP alphaThetaR, SEXP betaThetaR, SEXP iterationsR);
 
-double MCTwoSampleAR(double *y, int N, double *t, double rscale, double alphaTheta, double betaTheta, int iterations);
+double MCTwoSampleAR(double *y, int N, int *distMat, double *t, double rscale, double alphaTheta, double betaTheta, int iterations);
 
 SEXP RgibbsTwoSampleAR(SEXP yR, SEXP NR, SEXP tR, SEXP rscaleR, SEXP alphaThetaR, SEXP betaThetaR,
                       SEXP loAreaR, SEXP upAreaR, SEXP iterationsR, SEXP sdmetR, SEXP missR, SEXP NmissR,

@@ -67,11 +67,15 @@ trendtest.Gibbs.AR = function(before, after, iterations=1000, intArea=c(-.2,.2),
 trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scaleSlp=1,alphaTheta=1,betaTheta=5, progress=TRUE)
 {
   y = c(before,after)
-  N = length(y)	
   
-  if(length(which(is.na(y))) >0){
-    return("Missing values not allowed in this function")
+  miss = as.integer(which(is.na(y)))
+  Nmiss = as.integer(length(miss))
+  
+  if(Nmiss > 0){
+    y =  y[-miss]
   }
+  
+  N = length(y)
   
   iterations = as.integer(iterations)
   
@@ -84,15 +88,27 @@ trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scale
   
   pbFun = function(samps){ if(progress) setTxtProgressBar(pb, samps)}
   
+  distMat = abs(outer(1:(N+Nmiss),1:(N+Nmiss),'-')) 
+  if(Nmiss > 0){
+    distMat = distMat[-miss,-miss]
+  }
+  
   treat = c(rep(-0.5,length(before)),rep(0.5,length(after)))
-  timePoint = 1:N - length(before) - .5
+  timePoint = 1:(N+Nmiss) - length(before) - .5
   X0 = cbind(1,treat)
   X1 = X0*timePoint
   X = cbind(X0,X1)
   
+  if(Nmiss > 0){
+    treat = treat[-miss]
+    X0 = X0[-miss,]
+    X1 = X1[-miss,]
+    X = X[-miss,]
+  } 
+  
   nullLike = log(trendtest.nullMargLikeAR(y,X[,c(1,3)],alphaTheta,betaTheta))
   
-  out = .Call("MCAR_trend", y, N, alphaTheta, betaTheta, r.scaleInt^2, r.scaleSlp^2, X[,c(1,3)], X[,c(2,4)], iterations, progress, pbFun, new.env(), package="BayesSingleSub")
+  out = .Call("MCAR_trend", y, N, Nmiss, as.integer(distMat), alphaTheta, betaTheta, r.scaleInt^2, r.scaleSlp^2, X[,c(1,3)], X[,c(2,4)], iterations, progress, pbFun, new.env(), package="BayesSingleSub")
   
   if(progress) close(pb)
   
@@ -111,11 +127,11 @@ trendtest.nullMargLikeAR = function(y,X0,alphaTheta=1,betaTheta=5){
 }
 
 trendtest.nullMargLikeAR.theta = function(theta,y,N=length(y),X0,alphaTheta=1,betaTheta=5){
-  ret = .Call("MCnullMargLogLikeAR_trend",theta,y,N,alphaTheta,betaTheta,X0,package="BayesFactorPCL")
+  ret = .Call("MCnullMargLogLikeAR_trend",theta, Nmiss, as.integer(distMat), y,N,alphaTheta,betaTheta,X0,package="BayesFactorPCL")
   return(exp(ret))
 }
 
 trendtest.altMargLikeAR.thetag1g2 = function(theta,g1,g2,y,N=length(y),X0,X1,rInt=1, rSlp=1,alphaTheta=1,betaTheta=5){
-  ret = .Call("MCmargLogLikeAR_trendR",theta,g1,g2,y,N,alphaTheta,betaTheta,rInt,rSlp,X0,X1,package="BayesFactorPCL")
+  ret = .Call("MCmargLogLikeAR_trendR",theta, Nmiss, as.integer(distMat), g1,g2,y,N,alphaTheta,betaTheta,rInt,rSlp,X0,X1,package="BayesFactorPCL")
   return(ret)
 }

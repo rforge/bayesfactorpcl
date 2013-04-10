@@ -139,95 +139,95 @@ double sampThetaAR(double theta, double mu, double delta, double sig2, double g,
 	}
 }
 
-double MCTwoSampleAR(double *y, int N, double *t, double rscale, double alphaTheta, double betaTheta, int iterations)
+double MCTwoSampleAR(double *y, int N, int *distMat, double *t, double rscale, double alphaTheta, double betaTheta, int iterations)
 {
-	int i=0, j=0, m=0, Nsqr = N*N, iOne=1;
-	double theta,g,rscsq=rscale*rscale,mLike;
-	double ones[N],dOne=1,dZero=0;
-	double invPsi[Nsqr],invPsi0[Nsqr],invPsi1[Nsqr];
-	double tempV[N];
-	double tOnePsiOne,ttPsi0t;
-	double tempS, devs, logmlike[iterations];
+int i=0, j=0, m=0, Nsqr = N*N, iOne=1;
+double theta,g,rscsq=rscale*rscale,mLike;
+double ones[N],dOne=1,dZero=0;
+double invPsi[Nsqr],invPsi0[Nsqr],invPsi1[Nsqr];
+double tempV[N];
+double tOnePsiOne,ttPsi0t;
+double tempS, devs, logmlike[iterations];
 
-	AZERO(invPsi,Nsqr);
+AZERO(invPsi,Nsqr);
 
+for(i=0;i<N;i++)
+{
+ones[i] = 1;
+}
 
-	for(i=0;i<N;i++)
-	{
-		ones[i] = 1;
-	}
+GetRNGstate();
 
-	GetRNGstate();
+for(m=0;m<iterations;m++)
+{
+g = 1/rgamma(0.5,2/rscsq);
+theta = rbeta(alphaTheta,betaTheta);
 
-	for(m=0;m<iterations;m++)
-	{
-		g = 1/rgamma(0.5,2/rscsq);
-		theta = rbeta(alphaTheta,betaTheta);
+for(i=0;i<N;i++)
+{
+invPsi[i + N*i] = 1/(1-theta*theta);
+for(j=0;j<i;j++)
+{
+invPsi[i + N*j] = invPsi[i + N*i] * pow(theta,distMat[i + N*j]);  
+invPsi[j + N*i] = invPsi[i + N*j];
+}
+}
 
-		for(i=0;i<N;i++)
-		{
-			invPsi[i + N*i] = 1/(1-theta*theta);
-			for(j=0;j<i;j++)
-			{
-				invPsi[i + N*j] = invPsi[i + N*i] * pow(theta,abs(i-j));
-				invPsi[j + N*i] = invPsi[i + N*j];
-			}
-		}
+InvMatrixUpper(invPsi, N);
+internal_symmetrize(invPsi, N);
 
+Memcpy(invPsi0,invPsi,Nsqr);
 
-		InvMatrixUpper(invPsi, N);
-		internal_symmetrize(invPsi, N);
+tOnePsiOne = quadform(ones, invPsi, N, 1, N);
+tempS = -1/tOnePsiOne;
 
-		Memcpy(invPsi0,invPsi,Nsqr);
+F77_NAME(dsymv)("U", &N, &dOne, invPsi, &N, ones, &iOne, &dZero, tempV, &iOne);
+F77_NAME(dsyr)("U", &N, &tempS, tempV, &iOne, invPsi0, &N);
 
-		tOnePsiOne = quadform(ones, invPsi, N, 1, N);
-		tempS = -1/tOnePsiOne;
+Memcpy(invPsi1,invPsi0,Nsqr);
 
-		F77_NAME(dsymv)("U", &N, &dOne, invPsi, &N, ones, &iOne, &dZero, tempV, &iOne);
-		F77_NAME(dsyr)("U", &N, &tempS, tempV, &iOne, invPsi0, &N);
+ttPsi0t = quadform(t, invPsi0, N, 1, N) + 1/g;
+tempS = -1/ttPsi0t;
 
-		Memcpy(invPsi1,invPsi0,Nsqr);
+F77_NAME(dsymv)("U", &N, &dOne, invPsi0, &N, t, &iOne, &dZero, tempV, &iOne);
+F77_NAME(dsyr)("U", &N, &tempS, tempV, &iOne, invPsi1, &N);
 
-		ttPsi0t = quadform(t, invPsi0, N, 1, N) + 1/g;
-		tempS = -1/ttPsi0t;
+devs = quadform(y,invPsi1,N,1,N);
 
-		F77_NAME(dsymv)("U", &N, &dOne, invPsi0, &N, t, &iOne, &dZero, tempV, &iOne);
-		F77_NAME(dsyr)("U", &N, &tempS, tempV, &iOne, invPsi1, &N);
-
-		devs = quadform(y,invPsi1,N,1,N);
-
-		logmlike[m] = -0.5*(1.0*N-1)*log(devs) - 0.5*log(tOnePsiOne) - 0.5*log(ttPsi0t) +
-					0.5*matrixDet(invPsi, N, N, 1) - 0.5*log(g);
-
-	}
-
-	PutRNGstate();
-
-	return(logMeanExpLogs(logmlike,iterations));
+logmlike[m] = -0.5*(1.0*N-1)*log(devs) - 0.5*log(tOnePsiOne) - 0.5*log(ttPsi0t) +
+0.5*matrixDet(invPsi, N, N, 1) - 0.5*log(g);
 
 }
 
-SEXP RMCTwoSampleAR(SEXP yR, SEXP NR, SEXP tR, SEXP rscaleR, SEXP alphaThetaR, SEXP betaThetaR, SEXP iterationsR)
-{
-  int iterations = INTEGER_VALUE(iterationsR);
-	int N = INTEGER_VALUE(NR);
-	double rscale = NUMERIC_VALUE(rscaleR);
-	double alphaTheta = NUMERIC_VALUE(alphaThetaR);
-	double betaTheta = NUMERIC_VALUE(betaThetaR);
-	double *y = REAL(yR);
-	double *t = REAL(tR);
+PutRNGstate();
 
-	SEXP logBFR;
-	PROTECT(logBFR = allocVector(REALSXP, 1));
-	double *logBF = REAL(logBFR);
+return(logMeanExpLogs(logmlike,iterations));
 
-	logBF[0] = MCTwoSampleAR(y, N, t, rscale, alphaTheta, betaTheta, iterations);
-
-	UNPROTECT(1);
-
-	return(logBFR);
 }
 
+
+SEXP RMCTwoSampleAR(SEXP yR, SEXP NR, SEXP distMatR, SEXP tR, SEXP rscaleR, SEXP alphaThetaR, SEXP betaThetaR, SEXP iterationsR)
+{
+int iterations = INTEGER_VALUE(iterationsR);
+int N = INTEGER_VALUE(NR);
+int *distMat = INTEGER_POINTER(distMatR);
+double rscale = NUMERIC_VALUE(rscaleR);
+double alphaTheta = NUMERIC_VALUE(alphaThetaR);
+double betaTheta = NUMERIC_VALUE(betaThetaR);
+double *y = REAL(yR);
+double *t = REAL(tR);
+
+
+SEXP logBFR;
+PROTECT(logBFR = allocVector(REALSXP, 1));
+double *logBF = REAL(logBFR);
+
+logBF[0] = MCTwoSampleAR(y, N, distMat, t, rscale, alphaTheta, betaTheta, iterations);
+
+UNPROTECT(1);
+
+return(logBFR);
+}
 
 
 void gibbsTwoSampleAR(double *y, int N, double *t, double rscale, double alphaTheta, double betaTheta,
