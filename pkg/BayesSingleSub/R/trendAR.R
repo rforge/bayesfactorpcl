@@ -106,7 +106,7 @@ trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scale
     X = X[-miss,]
   } 
   
-  nullLike = log(trendtest.nullMargLikeAR(y,X[,c(1,3)],alphaTheta,betaTheta))
+  nullLike = log(trendtest.nullMargLikeAR(y,X[,c(1,3)], Nmiss, distMat, alphaTheta,betaTheta))
   
   out = .Call("MCAR_trend", y, N, Nmiss, as.integer(distMat), alphaTheta, betaTheta, r.scaleInt^2, r.scaleSlp^2, X[,c(1,3)], X[,c(2,4)], iterations, progress, pbFun, new.env(), package="BayesSingleSub")
   
@@ -120,18 +120,18 @@ trendtest.MC.AR = function(before, after, iterations=1000, r.scaleInt=1, r.scale
   
 }	
 
-trendtest.nullMargLikeAR = function(y,X0,alphaTheta=1,betaTheta=5){
+trendtest.nullMargLikeAR = function(y,X0, Nmiss, distMat,alphaTheta=1,betaTheta=5){
   N = length(y)
   fun = Vectorize(trendtest.nullMargLikeAR.theta, "theta")
-  integrate(fun,0,1,y=y,X0=X0,alphaTheta=alphaTheta,betaTheta=betaTheta,N=N)[[1]]
+  integrate(fun,0,1,y=y,X0=X0, Nmiss=Nmiss, distMat = distMat, alphaTheta=alphaTheta,betaTheta=betaTheta,N=N)[[1]]
 }
 
-trendtest.nullMargLikeAR.theta = function(theta,y,N=length(y),X0,alphaTheta=1,betaTheta=5){
+trendtest.nullMargLikeAR.theta = function(theta,y,N=length(y), Nmiss, distMat, X0,alphaTheta=1,betaTheta=5){
   ret = .Call("MCnullMargLogLikeAR_trend",theta, Nmiss, as.integer(distMat), y,N,alphaTheta,betaTheta,X0,package="BayesFactorPCL")
   return(exp(ret))
 }
 
-trendtest.altMargLikeAR.thetag1g2 = function(theta,g1,g2,y,N=length(y),X0,X1,rInt=1, rSlp=1,alphaTheta=1,betaTheta=5){
+trendtest.altMargLikeAR.thetag1g2 = function(theta,g1,g2,y,N=length(y), Nmiss, distMat,X0,X1,rInt=1, rSlp=1,alphaTheta=1,betaTheta=5){
   ret = .Call("MCmargLogLikeAR_trendR",theta, Nmiss, as.integer(distMat), g1,g2,y,N,alphaTheta,betaTheta,rInt,rSlp,X0,X1,package="BayesFactorPCL")
   return(ret)
 }
