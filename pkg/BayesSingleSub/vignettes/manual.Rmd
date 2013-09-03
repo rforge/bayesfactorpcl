@@ -101,12 +101,12 @@ The variable `chains.trend` contains a matrix with eight columns, one for each p
 
 Name in R     | Name in manuscript        | Column number in chains
 --------------|-------------------------  |------------------------
-`mu0`         | $latex \mu_0$             | 1
+`mu0`   | $latex \mu_0$             | 1
 `sig*delta`   | $latex \sigma_z \delta$   | 2
-`beta0`       | $latex \beta_0$           | 3
+`beta0`   | $latex \beta_0$           | 3
 `sig*beta1`   | $latex \sigma_z \beta_1$  | 4
-`sig2`        | $latex \sigma^2_z$        | 5
-`rho`         | $latex \rho$              | 8
+`sig2`   | $latex \sigma^2_z$        | 5
+`rho`   | $latex \rho$              | 8
 
 We can draw histograms of the samples for the parameters, as shown in the figure below. These histograms are approximations to the posterior distributions: for example, we can draw a histrogram for the $latex \rho$ parameter from the trend model:
 ```{r eval=FALSE}
