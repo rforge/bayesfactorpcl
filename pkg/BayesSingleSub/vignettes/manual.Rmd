@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr}
-%\VignetteIndexEntry{Using the BayesSingleSub package}
+%\VignetteIndexEntry{Using the BayesSingleSub package, version 0.9.2+}
 \usepackage[utf8]{inputenc}
 -->
 
@@ -8,95 +8,149 @@
 
 ------
 
-Using the 'BayesFactor' package, version 0.9.2+
+Using the 'BayesSingleSub' package, version 0.9.2+
 ===============================
 
-Richard D. Morey
+Richard D. Morey and Rivka M. de Vries
 -----------------
 
 
-Stable version: [CRAN page](http://cran.r-project.org/package=BayesFactor) - [Package NEWS (including version changes)](http://cran.r-project.org/web/packages/BayesFactor/NEWS) 
-
-Development version: [Development page](https://r-forge.r-project.org/projects/bayesfactorpcl/) - [Development package NEWS](https://r-forge.r-project.org/scm/viewvc.php/pkg/BayesFactorPCL/NEWS?view=markup&root=bayesfactorpcl) 
-
-
-### Table of Contents
-
-* Introductory material
-  * [Getting help](#help)
-  * [Introduction](#intro)
-  * [Loading the package](#loading)
-  * [Useful functions](#functions)
-* Performing analyses
-  * [One-sample (and two-sample paired), and manipulating Bayes factor objects](#onesample) 
-  * [Two independent samples](#twosample)
-  * [ANOVA, fixed-effects](#fixed)
-  * [ANOVA, mixed models (including repeated measures)](#mixed)
-  * [Regression](#regression)
-  * [General linear models: mixing continuous and categorical covariates](#glm)
-* Additional tips and tricks (0.9.4+)
-  * [Testing restrictions on linear models: generalTestBF()](#generalTestBF)
-  * [Saving time: Pre-culling Bayes factor objects](#preculltricks)
-  * [Saving memory: Thinning and filtering MCMC chains](#mcmctricks)
-* [References](#references)
-  
-### Getting help <a id="help"></a>
-
-* [Help forums](https://r-forge.r-project.org/forum/?group_id=554)
-* [Bug reports](https://r-forge.r-project.org/tracker/?group_id=554)
-* [Developer email (richarddmorey at gmail.com)](mailto:richarddmorey@gmail.com)
+Stable version: [CRAN page](http://cran.r-project.org/package=BayesSingleSub) 
 
 ```{r echo=FALSE,message=FALSE,results='hide'}
+options(markdown.HTML.stylesheet = 'extra/manual.css')
 library(knitr)
 options(digits=3)
 require(graphics)
 set.seed(2)
 ```
 
-<a id="intro"></a>
-### Introduction
-The `BayesFactor` package enables the computation of Bayes factors in standard designs, such as one- and two- sample designs, ANOVA designs, and regression. The Bayes factors are based on  work spread across several papers. This document is designed to show users how to compute Bayes factors using the package by example. It is not designed to present the models used in the comparisons in detail; for that, see the `BayesFactor` help and especially the references listed in this manual. Complete references are given at the [end of this document](#references).
+Below we show how to compute the Bayes factors $latex B_{ar}$, $latex B_{trend}$, $latex B_{int}$, and $latex B_{t+i}$, which are presented in De Vries and Morey (2013), and how to obtain and plot the posterior distributions of the model parameters. 
 
-If you need help or think you've found a bug, please use the links at the top of this document to contact the developers. When asking a question or reporting a bug, please send example code and data, the exact errors you're seeing (a cut-and-paste from the R console will work) and instructions for reproducing it. Also, report the output of `BFInfo()` and `sessionInfo()`, and let us know what operating system you're running.
-
-<a id="loading"></a>
-### Loading the package 
-The `BayesFactor` package must be installed and loaded before it can be used. Installing the package can be done in several ways and will not be covered here. Once it is installed, use the `library` function to load it:
-
-```{r message=FALSE}
-library(BayesFactor)
+First, download the R statistical environment from http://cran.r-project.org/ and install the BayesSingleSub package using the R command:
+```{r eval=FALSE}
+install.packages("BayesSingleSub") 
 ```
 
-```{r echo=FALSE,message=FALSE,results='hide'}
-options(BFprogress = FALSE)
-bfversion = BFInfo()
-session = sessionInfo()[[1]]
-rversion = paste(session$version.string," on ",session$platform,sep="")
+Then, load the BayesSingleSub package with the `library` function:
+```{r}
+library(BayesSingleSub)
+```
+For the purposes of this demonstration, we compute the Bayes factors for the data shown in Figure 1 of De Vries and Morey (2013). We first define the data and the number of observations in the pre- and post-treatment phases:
+```{r}
+data = c(87.5, 82.5, 53.4, 72.3, 94.2, 96.6, 57.4, 78.1, 
+         47.2, 80.7, 82.1, 73.7, 49.3, 79.3, 73.3, 57.3, 31.7, 
+         50.4, 77.8, 67, 40.5, 1.6, 38.6, 3.2, 24.1)
+
+n1 = 10
+n2 = 15
 ```
 
+For convenience, we divide the data before and after the intervention into separate vectors:
+```{r}
+ypre =  data[1:n1]
+ypost = data[n1 + 1:n2]
+```
+
+The logarithm of the JZS+AR Bayes factor $latex B_{ar}$ can be obtained by using the `ttest.Gibbs.AR` function, and the logarithm of the TAR Bayes factors $latex B_{int}$, $latex B_{trend}$, and $latex B_{i+t}$ by using the `trendtest.Gibbs.AR` function: 
+```{r results='hide'}
+logBAR = ttest.Gibbs.AR(ypre, ypost, 
+    iterations = 10000, return.chains = FALSE,
+		r.scale = 1, betaTheta = 5,sdMet = 0.3)
+logBTRENDS = trendtest.Gibbs.AR(ypre, ypost,
+		iterations = 10000, return.chains = FALSE,
+		r.scaleInt = 1, r.scaleSlp = 1, betaTheta = 5, sdMet = 0.3)
+```
+which will compute the Bayes factors while setting the $latex r$ scales of the Cauchy priors to 1, and the parameter $latex b$ of the beta priors on $latex \rho$ to 5. These are the default for the `ttest.Gibbs.AR` and `trendtest.Gibbs.AR` functions. 
+
+The first and second arguments of both functions are the series of observations in Phase 1 and Phase 2, respectively. The `iterations` argument controls the number of Gibbs sampler iterations; more iterations will increase the accuracy of the estimate of the Bayes factor. The accuracy of the estimate can be checked by comparing the estimate from the Gibbs sampler with the Monte Carlo estimate, discussed below. Substantial disagreement implies that the Gibbs sampler has not yet converged and the number of iterations should be increased. Setting the `return.chains` argument to `FALSE` ensures that the MCMC chains are not returned. They can be returned if they are needed, as we show below. The values for $latex r$ can be changed by changing the `r.scale` argument of the `ttest.Gibbs.AR` function and by changing the `r.scaleInt` (for the intercept differences) and `r.scaleSlp` (for the trend differences) arguments of the `trendtest.Gibbs.AR` function. 
+
+In both functions the value for $latex b$ can be changed by changing the `betaTheta` argument. If desired, $latex r$ and $latex b$ can be changed a few times and resulting Bayes factors can be compared.  Finally, the <q>acceptance rate</q> reported by the function is an index of the quality of the MCMC sampling of $latex \rho$ (the Metropolis-Hastings acceptance rate; Hastings, 1970; Ross,2002). This number should be between .25 and .5 for most efficient estimation. If needed, the acceptance rate can be increased or decreased by decreasing or increasing, respectively, the `sdMet` argument, but the default setting should suffice for almost all analyses. For more information about a function's arguments, see the R help files for the corresponding function (e.g., `help("ttest.Gibbs.AR")`).
+
+The `logBAR` variable now contains an estimate of the logarithm of the JZS+AR Bayes factor, and the `logBTRENDS` variable contains the logarithm of the three trend Bayes factors. We can exponentiate these log Bayes factors to obtain the Bayes factors:
+```{r}
+logBAR
+logBTRENDS
+exp(logBAR)	
+exp(logBTRENDS)
+```
+Every time the code above is run, the values will be slightly different, due to the random nature of MCMC estimation. However, with sufficient iterations (typically 2,000 or greater, in this application) the estimate should be consistent across calls to the `ttest.Gibbs.AR` and `trendtest.Gibbs.AR` functions.
+
+If we wish to examine the posterior distribution for any parameter or the interval null Bayes factors for $latex \delta$ and $latex \beta_1$, we may do so by first calling `trendtest.Gibbs.AR` function with the `return.chains` argument set to true and the bounds under the null hypotheses defined<sup><a href="#fn1" id="ref1">1</a></sup>:
+```{r results='hide'}
+output.trend = trendtest.Gibbs.AR(ypre,ypost,
+		iterations = 10000, return.chains = TRUE,
+		r.scaleInt = 1, r.scaleSlp = 1, betaTheta = 5, sdMet = 0.3,
+		intArea = c(-0.2, 0.2), slpArea = c(-0.1, 0.1))
+```
+The interval null Bayes factors are only returned if the `return.chains` argument is set to true. The default bounds under each of the null hypotheses changed by changing the `areaNull` argument of the `ttest.Gibbs.AR` function and changing the `intArea` (for the intercept) and `slpArea` (for the trend) arguments of the `trendtest.Gibbs.AR` function. Note that the chains contain <i> unstandardized </i> parameters, and the interval null Bayes factors are based on standardized effect sizes.
+
+The variable `output.trend` now contains four components: `logbf`, which contains an estimate of the Bayes factor(s), `chains`, which contains the MCMC chains, `acc`, which contains the Metropolis-Hastings acceptance rate described above, and `logbfArea`, which contains the Bayes factor(s) for interval null hypotheses.
+```{r}
+logIntervalNullBF.trend = output.trend$logbfArea
+chains.trend = output.trend$chains
+```
+The variable `logIntervalNullBF.trend` contains the logarithm of the interval-null Bayes factors for the intercept and slope, respectively. Exponentiating the log Bayes factors gives the Bayes factors:
+```{r}
+logIntervalNullBF.trend
+exp(logIntervalNullBF.trend)
+```
+As before, every time the code above is run, the values will be slightly different, due to the random nature of MCMC estimation.
+
+The variable `chains.trend` contains a matrix with eight columns, one for each parameter of the trend model. Each row represents an MCMC sample from the posterior distribution of a parameter. The parameters likely of interest to researchers, along with their names in the manuscript and column numbers, are shown in the table below:
+
+Name in R     | Name in manuscript        | Column number in chains
+--------------|-------------------------  |------------------------
+`mu0`         | $latex \mu_0$             | 1
+`sig*delta`   | $latex \sigma_z \delta$   | 2
+`beta0`       | $latex \beta_0$           | 3
+`sig*beta1`   | $latex \sigma_z \beta_1$  | 4
+`sig2`        | $latex \sigma^2_z$        | 5
+`rho`         | $latex \rho$              | 8
+
+We can draw histograms of the samples for the parameters, as shown in the figure below. These histograms are approximations to the posterior distributions: for example, we can draw a histrogram for the $latex \rho$ parameter from the trend model:
+```{r eval=FALSE}
+hist(chains.trend[, 8], main = "Posterior for autocorrelation coeff.", 
+    xlim = c(0, 1))
+```
+
+```{r echo=FALSE}
+hist(chains.trend[, 8],main="Posterior for autocorrelation coeff.", xlim=c(0,1),xlab=expression(rho))
+```
+
+It is also easy to get posterior summary statistics:
+```{r}
+summary(chains.trend[, 8])
+```
+In addition to the `ttest.Gibbs.AR` and `trendtest.Gibbs.AR` functions, the BayesSingleSub package also contains the `ttest.MCGQ.AR` and `trendtest.MC.AR` functions. We have not discussed these functions so far because they do not provide qualitatively different information from the information provided by the `ttest.Gibbs.AR` and `trendtest.Gibbs.AR` functions, and we did not want to confuse the reader by discussing several functions simultaneously. However, the `ttest.MCGQ.AR` and `trendtest.MC.AR` functions provide faster estimates of the Bayes factors than the `ttest.Gibbs.AR` and `trendtest.Gibbs.AR` functions, respectively. Their only disadvantage is that they do not return posterior distributions or interval null Bayes factors. This is because they estimate the Bayes factors by using Monte Carlo integration rather than Gibbs sampling. But when only the Bayes factor estimates are required, the `ttest.MCGQ.AR` and `trendtest.MC.AR` functions can be used, rather than the slower `ttest.Gibbs.AR` and `trendtest.Gibbs.AR` functions. As before, the functions require a definition of the Phase 1 and Phase 2 data and the number of iterations:
+```{r results='hide'}
+logBAR = ttest.MCGQ.AR(ypre, ypost, 
+    iterations = 10000,  r.scale = 1,  betaTheta = 5)
+logBTRENDS = trendtest.MC.AR(ypre, ypost, 
+    iterations = 10000, r.scaleInt = 1, r.scaleSlp = 1,  betaTheta = 5)
+```
+Again, the resulting log Bayes factors can be exponentiated to obtain the Bayes factors, and the values for $latex r$ and $latex b$ can be changed by changing the `r.scale`, `r.scaleInt`, `r.scaleSlp`, and `betaTheta` arguments. For comparison with the previously computed Bayes factors, we print the new Bayes factors:
+```{r}
+logBAR
+logBTRENDS
+exp(logBAR)  
+exp(logBTRENDS)
+```
+Although they are somewhat different from the Bayes factors computed using the `ttest.Gibbs.AR` and `trendtest.Gibbs.AR` functions due to random sampling, they are similar. Increasing the number of iterations will give more precise results, which will have a greater level of agreement.
+
+
+<a id="footnotes"></a>
+Footnotes 
+---------
+
+<sup id="fn1">1. The same process holds for the JZS+AR Bayes factor, but we only show the TAR Bayes factor for brevity.<a href="#ref1" title="Jump back to footnote 1 in the text.">↩</a></sup>
 
 <a id="references"></a>
 References 
 ---------
 
-<a id="Liangetal"></a> 
-Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423 ([PDF](http://www.isds.duke.edu/courses/Spring09/sta244/Handouts/hyper-g.pdf))
+De Vries, R. M. \& Morey, R. D. (2013). Bayesian hypothesis testing Single-Subject Data. Psychological Methods.
 
-<a id="Moreyarea"></a>
-Morey, R. D. and Rouder, J. N. (2011). Bayes Factor Approaches for Testing Interval Null Hypotheses. Psychological Methods, 16, pp. 406-419 ([PDF](http://drsmorey.org/bibtex/upload/Morey:Rouder:2011.pdf))
+Hastings, W. K. (1970). Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57, 97-109.
 
-<a id="MoreyMCMC"></a>
-Morey, R. D. and Rouder, J. N. and Pratte, M. S. and Speckman, P. L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors. Journal of Mathematical Psychology, 55, pp. 368-378 ([PDF](http://drsmorey.org/bibtex/upload/Morey:etal:2011a.pdf))
-
-<a id="Rouderregression"></a>
-Rouder, J. N. and Morey, R. D. (2013) Default Bayes Factors for Model Selection in Regression, Multivariate Behavioral Research, 47, pp. 877-903 ([PDF](http://pcl.missouri.edu/sites/default/files/Rouder.Morey_.MBR_.2012.pdf))
-
-<a id="RouderANOVA"></a>
-Rouder, J. N. and Morey, R. D. and Speckman, P. L. and Province, J. M. (2012), Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology, 56, pp. 356–374 ([PDF](http://pcl.missouri.edu/sites/default/files/Rouder.JMP_.2012.pdf))
-
-<a id="Rouderttest"></a>
-Rouder, J. N. and Speckman, P. L. and Sun, D. and Morey, R. D. and Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin and Review, 16, pp. 225-237 ([PDF](http://pcl.missouri.edu/sites/default/files/Rouder.bf_.pdf))
-
--------
-
-*This document was compiled with version `r bfversion` of BayesFactor (`r rversion`).*
+Ross, S. M. (2002). Simulation (3rd edition). London: Academic Press.
